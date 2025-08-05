@@ -1,0 +1,62 @@
+=== Kullanıcı Session Transkripti ===
+Session Başlangıç: 2025-08-05 20:37:29
+Dosya: user_session_script.txt
+==================================================
+
+[2025-08-05 20:38:12] Mikrofon ses tanıma hazır...
+[2025-08-05 20:38:14] Mikrofon ses tanıma hazır...
+[2025-08-05 20:38:27] ses tanımayı başlat diyorum Tekrar temizle diyorum bu artık çalışmaya başlıyor burada zaten bildiğimiz gibi burada da hiçbir sıkıntı yok Her şey çalışıyor benim burada.
+[2025-08-05 20:38:30] yapmam gerekiyor kamera zaten Çalışıyor abi buradan.
+[2025-08-05 20:38:35] onu da şey yapacağım otomatiği alacağım bu değerleri de kendisi girecek bunu da bastım abi
+[2025-08-05 20:38:43] Bu da şu an çalışıyor ders konuşmacıları çekiyor ve endpoint gidiyor keyler dönüyor.
+[2025-08-05 20:39:03] şimdi abi bunların hepsi okey Bu da hepsini tamamlandığını gösteriyor bunu kapatabiliriz şimdi ben şöyle bir sıkıntı yaşıyorum endpoint çakışması gibi bir şey yaşıyorum Galiba şu anda o yüzden şey olmuyor bazen böyle bazen etleri dinleyemiyorum mekan bir endpoint şu abi hemen açıyorum sana.
+[2025-08-05 20:39:12] bilmiyorum bir şey de saçma salak bir hata veriyor şu anda mesela şu an benim
+[2025-08-05 20:39:19] Mesela ben şu an speak istemem gelen spikere endpoint çeviriyorum sana göstermiştim Hatta
+[2025-08-05 20:39:26] mesela şu anda ben onu açmak istediğimde Abi flash player 5000 gözüküyor.
+[2025-08-05 20:39:35] şunu şöyle yapsam bu 5000 gün sürüyor Bundan mı acaba Bak böyle açılmıyor.
+[2025-08-05 20:39:37] Flash kira.
+[2025-08-05 20:39:44] Bence de aşılması lazım şeye bakacağım şimdi ben chat atmıştım galiba
+[2025-08-05 20:39:53] bakan böyle dönüyor 5000 önlemek için neler yapmalıyız ise lokaller Allah.
+[2025-08-05 20:39:56] bunu düzelteceğim abi bir bu sorun var
+[2025-08-05 20:40:03] şunu deneyeyim bir daha bir burada ne durum.
+[2025-08-05 20:40:14] Ama dur bir de dur böyle Zaten açılmaz ki abi şunu Get text yapmam lazım
+[2025-08-05 20:40:19] sonra şunu koyduğumda gelecek mi
+[2025-08-05 20:40:27] bir daha geldi lan Bak şimdi sen şu an bu ekranı görüyorsun değil mi.
+[2025-08-05 20:40:45] saçma sapağı olmaması lazım sıkıntı yok bu böyle geliyorsa çok iyi bunu içeriğini doldururum tekrar.
+[2025-08-05 20:40:57] şu an
+[2025-08-05 20:41:12] Şu an ben Muhtemelen endpoint 5000 geçe yanımda olayı bir sıkıntı olabilir hallolur şimdi abi daha güzel bir kısım göstereceğim
+[2025-08-05 20:41:16] oda abisi.
+[2025-08-05 20:41:23] var abi Şu an çalışmıyor ama normalde çalışıyor.
+[2025-08-05 20:41:28] ya Dikkatli ile bağlan skorunu veriyor işte
+[2025-08-05 20:41:36] Ben öyle hepsi aynı birbirine benzesin diye öyle yaptım.
+[2025-08-05 20:41:40] Yok onu çözeriz onda sıkıntı yok.
+[2025-08-05 20:41:46] sonra abi npm Run dev yapıyoruz.
+[2025-08-05 20:41:51] burada açıyoruz Abi bu da böyle.
+[2025-08-05 20:42:02] Bak şimdi Abi burası çalışırsa Eğer Benim sesim burada şey oluyor.
+[2025-08-05 20:42:09] Bu benim anlık göz takibi skoru falan veriyor.
+[2025-08-05 20:42:14] buraya klavye mouse yapacağım ama bunları burada düşünme bunun altında düşün kanka.
+[2025-08-05 20:42:20] şöyle düşün Hatta şöyle aynen şöyle duruyor.
+[2025-08-05 20:42:32] Burası ses analizi Burada sadece şu an mikrofon kaynağındaki ses analizinden konuştuğumuzu algılıyor sadece görsel bir şey var
+[2025-08-05 20:42:45] yok abi ben ikinci ekrana bakıyorum ya ondan oluyor buraya klavye mouse ile aktif değilse şu an kırmızı gösteriyor.
+[2025-08-05 20:42:54] Live değil yok bundan şu an şey bu hatta Bak dur göstereyim sana Biz şu an en point'i buna çevirdik ya
+[2025-08-05 20:42:56] bak şimdi mesela geleceğim front tente abi.
+[2025-08-05 20:43:04] 50002 olacak değil mi Aynen.
+[2025-08-05 20:43:17] 50002 abi bak Şimdi güncelledik sayfayı ara.
+[2025-08-05 20:44:59] değişmiyor işlerim var evliliği gibi bir şeye ihtiyacımız yok damar için dörtlü olsun diye yaptım acentamız özel bir şey yazdırıyor buraya ya da aktif heron sabit veriyor işte ya da şey yapıyor Mesela 10 sayfaya bazı böyle uğraş gerektiren bir şey öneriyor çok odanın çalış böyle.
+[2025-08-05 20:45:06] efendim
+[2025-08-05 20:45:52] bilmiyorum ama kitabı zaten yükledim sana deposunu vereyim Ben de daha şeyi ayarlayayım işte prompt yazınca Agent şu an kameraya geri de göstereyim sana bak bak abi şimdi
+[2025-08-05 20:46:05] Aden.
+[2025-08-05 20:46:11] işte sadece şeyler kaldı.
+[2025-08-05 20:46:22] bir kısmı kolaydı ya Aynen çok mu abi
+[2025-08-05 20:46:34] butonları Hadi Hepsi bu ekranda olsun online sadece Beykent'te dur.
+[2025-08-05 20:46:43] abişko Abi şu an bana ne lazım.
+[2025-08-05 20:46:59] abi ses analizinde mesela poin Ve harbi endpoint canlı mı tüm uzay kıllı İnce
+[2025-08-05 20:47:03] Fatih Dursun
+[2025-08-05 20:47:15] sıfırdan kuracaksın ya direkt bunları Yükleyince.
+
+==================================================
+Session Bitiş: 2025-08-05 20:47:15
+Session Süresi: 0:09:46
+Toplam Çalışma Zamanı: 586 saniye
+==================================================
+Session tamamlandı - Kullanıcı sesleri kaydedildi.

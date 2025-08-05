@@ -1,0 +1,79 @@
+=== Sistem Session Transkripti ===
+Session Başlangıç: 2025-08-05 20:37:29
+Dosya: system_session_script.txt
+==================================================
+
+[2025-08-05 20:38:04] 🎯 === MANUEL KALİBRASYON MODU ===
+[2025-08-05 20:38:04] 📊 Mevcut mikrofon eşik değeri: 300
+[2025-08-05 20:38:04] 🔊 5 saniye boyunca mikrofona konuşun...
+[2025-08-05 20:38:04] 💡 Normal konuşma seviyenizde test edin
+[2025-08-05 20:38:10] 📊 === KALİBRASYON SONUÇLARI ===
+[2025-08-05 20:38:10] 🔊 Ortalama ses seviyesi: 799.1
+[2025-08-05 20:38:10] 🔊 Maksimum ses seviyesi: 881.0
+[2025-08-05 20:38:10] 🔊 Minimum ses seviyesi: 711.7
+[2025-08-05 20:38:10] 
+🎯 === ÖNERİLEN EŞİK DEĞERLERİ ===
+[2025-08-05 20:38:10] 🟢 Muhafazakar (Az hassas): 239
+[2025-08-05 20:38:10] 🟡 Dengeli (Önerilen): 399
+[2025-08-05 20:38:10] 🔴 Hassas (Çok hassas): 559
+[2025-08-05 20:38:10] ✅ Dengeli eşik değeri uygulandı: 399
+[2025-08-05 20:38:10] 💡 Kalibre Et butonuna tekrar tıklayarak farklı değerler deneyebilirsiniz
+[2025-08-05 20:38:12] Sistem ses tanıma hazır...
+[2025-08-05 20:38:13] 🎯 Bağlanan cihaz: CABLE Output (VB-Audio Virtual 
+[2025-08-05 20:38:13] 📊 Ayarlar: 44100Hz, 1 kanal
+[2025-08-05 20:38:13] ✅ VB-Audio cihazı aktif
+[2025-08-05 20:38:13] 💡 Windows ses çıkışının 'CABLE Input' olduğundan emin olun
+[2025-08-05 20:38:13] 🔊 Sistem ses izleme başladı - Ses gelirse işlenecek
+[2025-08-05 20:38:13] 🔊 Sistem ses tanıma aktif!
+[2025-08-05 20:38:14] Sistem ses tanıma hazır...
+[2025-08-05 20:38:21] Evet.
+[2025-08-05 20:38:25] kameramızı oğlum abi
+[2025-08-05 20:38:43] Evet.
+[2025-08-05 20:39:03] Tarayıcıyı mı anlıyor.
+[2025-08-05 20:39:12] Şu an ne almıyor
+[2025-08-05 20:39:19] Evet Evet dün
+[2025-08-05 20:39:25] Selamünaleyküm ne yapıyor.
+[2025-08-05 20:39:35] açılması.
+[2025-08-05 20:39:37] Niye açılmıyor.
+[2025-08-05 20:39:40] şeyde kuruyorduk.
+[2025-08-05 20:39:51] 50002000
+[2025-08-05 20:39:57] Avea not
+[2025-08-05 20:40:01] alamazsam bağlanıyor mu en azından.
+[2025-08-05 20:40:06] değil.
+[2025-08-05 20:40:08] vermez Yoksa direkt.
+[2025-08-05 20:40:27] evde Efes.
+[2025-08-05 20:40:31] Üçler konuştuktan sonra şey için belli bir süre Ben de öyle oluyor.
+[2025-08-05 20:40:33] SDF Get demen lazım.
+[2025-08-05 20:40:50] bek müzik video on saniye bekledikten sonra Gerçi bizim.
+[2025-08-05 20:40:52] bizi sesten yoktu gerç.
+[2025-08-05 20:40:56] var mı Yok ava gideceğim bir dakika.
+[2025-08-05 20:41:15] şu
+[2025-08-05 20:41:19] şey yok değil mi sesten dikkat yok.
+[2025-08-05 20:41:23] dikkat.
+[2025-08-05 20:41:25] bizim sesten dikkat.
+[2025-08-05 20:41:31] Gözde şeye bakıyorsun
+[2025-08-05 20:41:37] Focus skor null den no mu dönüyor Doğan.
+[2025-08-05 20:41:40] 9 skor başka bir şey anlatıyor O yüzden sor ok.
+[2025-08-05 20:41:54] buraya.
+[2025-08-05 20:42:15] Evet evet.
+[2025-08-05 20:42:20] ekrana bakıyor Niye bir evet bir hayır.
+[2025-08-05 20:42:24] pardon.
+[2025-08-05 20:42:34] Tracker zannettim ben par tarayıcı
+[2025-08-05 20:42:42] Ee pardon pardon.
+[2025-08-05 20:42:53] Evet.
+[2025-08-05 20:43:04] oymuş.
+[2025-08-05 20:43:55] abi değerler şeydir
+[2025-08-05 20:44:00] Tamam tamam
+[2025-08-05 20:44:59] sen
+[2025-08-05 20:45:02] harbi bir şey söyleyeyim mi
+[2025-08-05 20:45:59] mükemmel
+[2025-08-05 20:46:49] peki
+[2025-08-05 20:46:59] frekans.
+[2025-08-05 20:47:15] ben.
+
+==================================================
+Session Bitiş: 2025-08-05 20:47:15
+Session Süresi: 0:09:46
+Toplam Çalışma Zamanı: 586 saniye
+==================================================
+Session tamamlandı - Sistem sesleri kaydedildi.

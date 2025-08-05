@@ -1,0 +1,12 @@
+=== Kullanıcı Session Transkripti ===
+Session Başlangıç: 2025-08-05 15:44:13
+Dosya: user_session_script.txt
+==================================================
+
+
+==================================================
+Session Bitiş: 2025-08-05 15:45:09
+Session Süresi: 0:00:56
+Toplam Çalışma Zamanı: 56 saniye
+==================================================
+Session tamamlandı - Kullanıcı sesleri kaydedildi.

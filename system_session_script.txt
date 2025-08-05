@@ -1,0 +1,18 @@
+=== Sistem Session Transkripti ===
+Session Başlangıç: 2025-08-05 15:44:13
+Dosya: system_session_script.txt
+==================================================
+
+[2025-08-05 15:44:16] 🎯 Bağlanan cihaz: CABLE Output (VB-Audio Virtual 
+[2025-08-05 15:44:16] 📊 Ayarlar: 44100Hz, 1 kanal
+[2025-08-05 15:44:16] ✅ VB-Audio cihazı aktif
+[2025-08-05 15:44:16] 💡 Windows ses çıkışının 'CABLE Input' olduğundan emin olun
+[2025-08-05 15:44:17] 🔊 Sistem ses izleme başladı - Ses gelirse işlenecek
+[2025-08-05 15:44:18] 🔊 Sistem ses tanıma aktif!
+
+==================================================
+Session Bitiş: 2025-08-05 15:45:09
+Session Süresi: 0:00:56
+Toplam Çalışma Zamanı: 56 saniye
+==================================================
+Session tamamlandı - Sistem sesleri kaydedildi.

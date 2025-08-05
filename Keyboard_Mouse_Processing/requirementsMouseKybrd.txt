@@ -1,0 +1,71 @@
+# Python 3.11.13 için Mouse & Keyboard Processing Gereksinimleri
+# mouse_keyboard3.py için
+
+# Input Device Control & Monitoring
+pynput>=1.7.6
+
+# Screen Information
+screeninfo>=0.8.1
+
+# System Information & Process Management
+psutil>=5.9.0
+
+# Window Management (Windows)
+pygetwindow>=0.0.9
+
+# Web Framework
+flask>=2.3.0
+
+# System Libraries (Python ile birlikte gelir)
+# time, threading
+
+# Platform Specific Notes:
+# Windows: pygetwindow desteklenir
+# Linux: python-xlib gerekebilir
+# macOS: Accessibility permissions gerekir
+
+# Conda kurulum komutları:
+# conda create -n mouse_keyboard_env python=3.11.13
+# conda activate mouse_keyboard_env
+# conda install -c conda-forge flask psutil
+# pip install pynput screeninfo pygetwindow
+
+# Alternative installation (if conda packages not available):
+# pip install pynput>=1.7.6 screeninfo>=0.8.1 psutil>=5.9.0 pygetwindow>=0.0.9 flask>=2.3.0
+
+# Platform-specific additional requirements:
+# Linux additional: python3-xlib
+# conda install -c conda-forge python-xlib (Linux)
+
+# macOS additional: pyobjc-framework-Quartz
+# pip install pyobjc-framework-Quartz (macOS)
+
+# Windows additional: pywin32 (usually included with Python)
+# conda install pywin32 (if needed)
+
+# Security Notes:
+# - pynput requires accessibility permissions on macOS
+# - Administrator privileges may be required on Windows
+# - Antivirus software may flag keyboard/mouse monitoring
+# - Use responsibly and in compliance with local laws
+
+# ÖNEMLI NOTLAR:
+# 1. setup_mouse_keyboard_env.bat dosyasını çalıştırarak otomatik kurulum yapabilirsiniz
+# 2. Windows'ta admin yetkisi gerekebilir (klavye/mouse dinleme için)
+# 3. macOS'ta System Preferences > Security & Privacy > Accessibility'de izin vermelisiniz
+# 4. Linux'ta X11 server gereklidir ve ek paketler kurulması gerekebilir
+# 5. Antivirüs yazılımları klavye/mouse dinlemeyi engelleyebilir
+# 6. pygetwindow sadece Windows'ta çalışır
+# 7. Flask API localhost:5000 portunda çalışır
+# 8. Program tarayıcı sekmelerini takip eder ve aktivite durumunu JSON olarak döner
+
+# API Endpoints:
+# GET /api/status - Aktivite durumunu döner
+# Response format:
+# {
+#   "status": 1/0,           // 1: hedef pencere aktif, 0: değil
+#   "tab_changed": true/false, // sekme değişti mi
+#   "mouse_activity": true/false, // mouse aktivitesi var mı
+#   "keyboard_activity": true/false // klavye aktivitesi var mı
+# }
+

@@ -1,0 +1,218 @@
+/* App Container */
+.app-container {
+  width: 100dvw;
+  height: 100vh;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.1);
+}
+
+.app-header h1 {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 300;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0;
+  flex: 1;
+}
+
+/* Status Cards */
+.status-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  padding: 20px;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.status-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Card Headers */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+/* Status Indicators */
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.active {
+  background: #4CAF50;
+  box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+}
+
+.status-indicator.inactive {
+  background: #f44336;
+  box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* Card Content */
+.card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.card-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
+/* Specific Card Colors */
+.eye-tracking {
+  border-left: 4px solid #2196F3;
+}
+
+.voice-analysis {
+  border-left: 4px solid #FF9800;
+}
+
+.keyboard-mouse {
+  border-left: 4px solid #9C27B0;
+}
+
+.student-memory {
+  border-left: 4px solid #4CAF50;
+}
+
+/* System Overview */
+.system-overview {
+  padding: 20px;
+  background: rgba(0,0,0,0.1);
+}
+
+.overview-card {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  border: none;
+}
+
+.overview-card h3 {
+  margin: 0 0 15px 0;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.system-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  display: block;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.stat-value.healthy {
+  color: #4CAF50;
+}
+
+/* Responsive Design */
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, auto);
+    gap: 0;
+  }
+  
+  .system-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+}

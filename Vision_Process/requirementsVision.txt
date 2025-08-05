@@ -1,0 +1,63 @@
+# Python 3.8.20 için Vision Processing Gereksinimleri
+# run_with_webcam.py ve diğer vision dosyaları için
+
+# Deep Learning Framework
+torch>=1.8.0,<2.0.0
+torchvision>=0.9.0,<1.0.0
+
+# Computer Vision
+opencv-python>=4.5.0
+opencv-contrib-python>=4.5.0
+
+# Face Detection & Landmarks
+dlib>=19.24.0
+imutils>=0.5.4
+
+# Numerical Computing
+numpy>=1.19.5,<1.25.0
+scipy>=1.7.0
+
+# Plotting & Visualization
+matplotlib>=3.3.0
+
+# Web Framework
+flask>=2.0.0
+flask-cors>=3.0.10
+
+# System Libraries (Python ile birlikte gelir)
+# typing, os, threading, time, socket, math
+
+# CUDA Support (Opsiyonel - GPU varsa)
+# cudatoolkit=10.2 (conda ile)
+
+# Windows özel gereksinimler
+# Visual C++ Redistributable (dlib için)
+
+# Conda kurulum komutları:
+# conda create -n vision_env python=3.8.20
+# conda activate vision_env
+# conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
+# conda install -c conda-forge opencv dlib
+# conda install -c conda-forge numpy scipy matplotlib flask
+# pip install flask-cors imutils
+
+# CPU-only kurulum için:
+# conda install pytorch torchvision cpuonly -c pytorch
+
+# Gerekli dosyalar:
+# - checkpoint.pt (model ağırlıkları)
+# - lbpcascade_frontalface_improved.xml (face cascade)
+# - shape_predictor_5_face_landmarks.dat (dlib landmarks)
+
+# ÖNEMLI NOTLAR:
+# 1. setup_vision_env.bat dosyasını çalıştırarak otomatik kurulum yapabilirsiniz
+# 2. CUDA desteği için NVIDIA GPU ve CUDA 10.2 gereklidir
+# 3. dlib Windows'ta Visual C++ Redistributable gerektirir
+# 4. Webcam erişimi için admin yetkisi gerekebilir
+# 5. PyTorch versiyonu Python 3.8.20 ile uyumlu olmalıdır
+# 6. OpenCV webcam problemleri için farklı backend'ler deneyin:
+#    cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Windows
+#    cv2.VideoCapture(0, cv2.CAP_V4L2)   # Linux
+# 7. Model checkpoint.pt dosyası proje dizininde olmalıdır
+# 8. Flask API port 8000'de çalışır (flask_api.py)
+# 9. Real-time performans için GPU kullanımı önerilir
