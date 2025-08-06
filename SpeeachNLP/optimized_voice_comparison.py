@@ -35,29 +35,56 @@ class LessonFocusAnalyzer:
         # Metin işleme ve odak analizi araçları
         self.setup_focus_analysis_tools()
         
-        self.api_url = "http://localhost:5002/get_texts"
+        # Flask API ayarları - unified_voice_app.py ile aynı port (5002)
+        self.api_url = "http://127.0.0.1:5002/get_texts"  # localhost yerine 127.0.0.1 - daha hızlı
         self.analysis_results = []
         
         print("✅ Odak Analiz Sistemi hazır!")
+        print(f"🔗 Flask API bağlantısı: {self.api_url}")
     
     def load_model(self):
-        """Gelişmiş çok dilli BERT modelini yükler"""
-        print("📚 Gelişmiş çok dilli BERT modeli yükleniyor...")
-        try:
-            # Önce güncel ve performanslı modeli dene
-            self.bert_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')
-            print("✅ Gelişmiş çok dilli BERT modeli yüklendi!")
-        except Exception as e:
-            print(f"⚠️ Ana model yüklenemedi, alternatif model deneniyor... ({e})")
+        """Yerel BERT modelini yükler, yoksa indirir ve kaydeder"""
+        print("📚 BERT modeli yükleniyor...")
+        
+        import os
+        
+        # Yerel model klasörü
+        local_model_dir = "local_models"
+        model_path = os.path.join(local_model_dir, "sentence_transformer_model")
+        
+        # Klasörü oluştur
+        os.makedirs(local_model_dir, exist_ok=True)
+        
+        # Önce yerel modeli kontrol et
+        if os.path.exists(model_path) and os.listdir(model_path):
             try:
-                # Alternatif olarak daha hafif ama güçlü model
-                self.bert_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-                print("✅ Alternatif çok dilli modeli yüklendi!")
-            except Exception as e2:
-                print(f"⚠️ Alternatif model de yüklenemedi, varsayılan modele geri dönülüyor... ({e2})")
-                # Son çare olarak eski modeli kullan
-                self.bert_model = SentenceTransformer('dbmdz/bert-base-turkish-cased')
-                print("✅ Varsayılan BERT modeli yüklendi!")
+                print("🔍 Yerel model bulundu, yükleniyor...")
+                self.bert_model = SentenceTransformer(model_path)
+                print("✅ Yerel BERT modeli başarıyla yüklendi!")
+                return
+            except Exception as e:
+                print(f"⚠️ Yerel model yüklenemedi: {e}")
+                print("🔄 Modeli yeniden indirmeye çalışılıyor...")
+        
+        # Yerel model yoksa veya bozuksa, hafif bir model indir
+        print("📥 Model indiriliyor ve yerel olarak kaydediliyor...")
+        try:
+            # Küçük ve hızlı model kullan
+            model_name = 'all-MiniLM-L6-v2'  # Çok hafif ve hızlı
+            print(f"🔄 {model_name} modeli indiriliyor...")
+            
+            # Modeli indir
+            self.bert_model = SentenceTransformer(model_name)
+            
+            # Yerel olarak kaydet
+            self.bert_model.save(model_path)
+            print(f"✅ Model indirildi ve {model_path} klasörüne kaydedildi!")
+            print("💡 Bir sonraki çalıştırmada yerel model kullanılacak")
+            
+        except Exception as e:
+            print(f"⚠️ Model indirilemedi: {e}")
+            print("🚫 BERT olmadan çalışmaya devam ediliyor...")
+            self.bert_model = None
     
     def setup_focus_analysis_tools(self):
         """Odak analizi için özel araçları kurar"""
@@ -133,10 +160,14 @@ class LessonFocusAnalyzer:
         """
         results = {}
         
-        # 1. BERT Semantic Relevance (Ana metrik)
+        # 1. BERT Semantic Relevance (Ana metrik) - Yerel model güvenli
         try:
             if not lesson_text.strip() or not student_text.strip():
                 results['semantic_relevance'] = 0.0
+            elif self.bert_model is None:
+                # BERT modeli yoksa basit benzerlik hesapla
+                print("💭 BERT modeli yok, basit benzerlik hesaplanıyor...")
+                results['semantic_relevance'] = self.calculate_simple_similarity(lesson_text, student_text)
             else:
                 # Metinleri normalize et
                 normalized_lesson = self.preprocess_text(lesson_text)
@@ -223,6 +254,22 @@ class LessonFocusAnalyzer:
         
         return irrelevant_count / total_categories if total_categories > 0 else 0.0
     
+    def calculate_topic_similarity(self, text1, text2):
+        """İki metin arasındaki konu benzerliğini hesaplar"""
+        topics1 = self.detect_topics(text1)
+        topics2 = self.detect_topics(text2)
+        
+        if not topics1 and not topics2:
+            return 1.0  # İkisi de konusuz
+        if not topics1 or not topics2:
+            return 0.0  # Biri konusuz
+        
+        # Jaccard benzerliği
+        intersection = len(topics1.intersection(topics2))
+        union = len(topics1.union(topics2))
+        
+        return intersection / union if union > 0 else 0.0
+    
     def get_focus_grade(self, score):
         """Odak skoruna göre not ve kategori verir"""
         if score >= 0.80:
@@ -239,6 +286,8 @@ class LessonFocusAnalyzer:
             return "C", "ÇOK ZAYIF ODAK", "💔"
         elif score >= 0.20:
             return "D", "DAĞINIK", "⚠️"
+        else:
+            return "F", "ÇOK DAĞINIK", "❌"
     def calculate_simple_similarity(self, text1, text2):
         """Basit benzerlik hesaplama (BERT alternatifi)"""
         if not text1.strip() and not text2.strip():
@@ -272,11 +321,14 @@ class LessonFocusAnalyzer:
         """
         results = {}
         
-        # 1. BERT Semantic Similarity (Ana metrik) - İyileştirilmiş
+        # 1. BERT Semantic Similarity (Ana metrik) - Yerel model güvenli
         try:
             # Boş metinleri kontrol et
             if not text1.strip() or not text2.strip():
                 results['bert_similarity'] = 0.0 if text1.strip() != text2.strip() else 1.0
+            elif self.bert_model is None:
+                # BERT modeli yoksa basit benzerlik hesapla
+                results['bert_similarity'] = self.calculate_simple_similarity(text1, text2)
             else:
                 # Metinleri normalize et
                 normalized_text1 = self.preprocess_text(text1)
@@ -397,9 +449,22 @@ class LessonFocusAnalyzer:
             return "F", "Uygunsuz", "❌"
     
     def fetch_texts_from_api(self):
-        """API'den metin verilerini çeker ve mevcut focus_score'u da alır"""
+        """API'den metin verilerini çeker ve mevcut focus_score'u da alır - Optimized"""
         try:
-            response = requests.get(self.api_url)
+            # Session'ı tekrar kullan - bağlantı pool'u için hız optimizasyonu
+            if not hasattr(self, '_session'):
+                import requests
+                self._session = requests.Session()
+                # Keep-alive ve connection pooling
+                adapter = requests.adapters.HTTPAdapter(
+                    pool_connections=1,
+                    pool_maxsize=2,
+                    max_retries=0
+                )
+                self._session.mount('http://', adapter)
+            
+            # Hızlı GET request - timeout azaltıldı
+            response = self._session.get(self.api_url, timeout=1)  # 1 saniye timeout - hız için
             if response.status_code == 200:
                 data = response.json()
                 # API'den gelen focus_score'u da dahil et
@@ -411,6 +476,9 @@ class LessonFocusAnalyzer:
                 return None
         except requests.exceptions.ConnectionError:
             print("API bağlantısı kurulamadı. Sunucunun çalıştığından emin olun.")
+            return None
+        except requests.exceptions.Timeout:
+            print("API timeout hatası - sunucu yavaş yanıt veriyor")
             return None
         except Exception as e:
             print(f"Veri çekme hatası: {e}")
@@ -935,63 +1003,15 @@ def main():
         print("💡 Gerekli kütüphaneleri yüklemek için: pip install -r requirements.txt")
         return
     
-    while True:
-        print("\n📋 DERS ODAK ANALİZ MENÜSÜ:")
-        print("1. 🎯 Tek seferlik odak analizi (zaman eşleştirmeli)")
-        print("2. 🔄 Sürekli odak izleme (zaman eşleştirmeli)")  
-        print("3. 📊 Tek seferlik periyodik analiz (son 20 saniye)")
-        print("4. ⏰ Sürekli periyodik izleme (20 saniyelik dönemler)")
-        print("5. 💾 Analiz sonuçlarını CSV'ye kaydet")
-        print("6. 🧪 Odak analizi testi (örnek verilerle)")
-        print("7. 🚪 Çıkış")
-        
-        choice = input("\nSeçiminizi yapın (1-7): ").strip()
-        
-        if choice == "1":
-            time_window = input("Zaman penceresi (saniye, varsayılan 10): ").strip()
-            time_window = int(time_window) if time_window.isdigit() else 10
-            
-            analyzer.analyze_lesson_focus_from_api(time_window)
-            
-        elif choice == "2":
-            interval = input("Kontrol aralığı (saniye, varsayılan 30): ").strip()
-            interval = int(interval) if interval.isdigit() else 30
-            
-            time_window = input("Zaman penceresi (saniye, varsayılan 10): ").strip()
-            time_window = int(time_window) if time_window.isdigit() else 10
-            
-            analyzer.continuous_monitoring(interval, time_window)
-            
-        elif choice == "3":
-            period_seconds = input("Analiz periyodu (saniye, varsayılan 20): ").strip()
-            period_seconds = int(period_seconds) if period_seconds.isdigit() else 20
-            
-            analyzer.analyze_recent_period(period_seconds)
-            
-        elif choice == "4":
-            interval = input("Kontrol aralığı (saniye, varsayılan 20): ").strip()
-            interval = int(interval) if interval.isdigit() else 20
-            
-            period_seconds = input("Analiz periyodu (saniye, varsayılan 20): ").strip()
-            period_seconds = int(period_seconds) if period_seconds.isdigit() else 20
-            
-            analyzer.continuous_period_monitoring(interval, period_seconds)
-            
-        elif choice == "5":
-            filename = input("Dosya adı (varsayılan: lesson_focus_analysis_results.csv): ").strip()
-            filename = filename if filename else "lesson_focus_analysis_results.csv"
-            
-            analyzer.save_results_to_csv(filename)
-            
-        elif choice == "6":
-            analyzer.test_focus_analysis_with_examples()
-            
-        elif choice == "7":
-            print("👋 Ders odak analiz sistemi kapatılıyor...")
-            break
-            
-        else:
-            print("❌ Geçersiz seçim! Lütfen 1-7 arası bir sayı girin.")
+    # Sabit parametrelerle sürekli odak izleme başlat
+    interval = 10  # 10 saniye kontrol aralığı
+    time_window = 20  # 20 saniye zaman penceresi
+    
+    print(f"\n🚀 Sürekli odak izleme başlatılıyor...")
+    print(f"📊 Her {interval} saniyede bir son {time_window} saniye analiz edilecek")
+    print("⏹️ Durdurmak için Ctrl+C tuşlayın\n")
+    
+    analyzer.continuous_monitoring(interval, time_window)
 
 if __name__ == "__main__":
     main()

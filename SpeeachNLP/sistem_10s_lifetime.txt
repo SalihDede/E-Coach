@@ -1,0 +1,5 @@
+=== Sistem 10s Lifetime Metinleri ===
+Oluşturulma: 2025-08-06 15:00:10
+NOT: Bu dosya 10 saniye boyunca veri tutar, sonra temizlenir.
+==================================================
+

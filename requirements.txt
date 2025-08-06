@@ -46,3 +46,5 @@ PyQt5
 
 pyttsx3
 langgraph
+flask-cors
+reportlab

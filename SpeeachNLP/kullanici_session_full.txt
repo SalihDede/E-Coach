@@ -1,0 +1,6 @@
+=== Kullanıcı Session Full Transkripti ===
+Session Başlangıç: 2025-08-06 15:00:08
+Dosya: kullanici_session_full.txt
+NOT: Bu dosya uygulama açık olduğu sürece tüm verileri tutar.
+==================================================
+

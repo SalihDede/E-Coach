@@ -15,6 +15,7 @@ pygetwindow>=0.0.9
 
 # Web Framework
 flask>=2.3.0
+flask-cors
 
 # System Libraries (Python ile birlikte gelir)
 # time, threading

@@ -15,6 +15,7 @@ import requests
 import json
 from collections import deque
 from flask import Flask, jsonify
+from flask_cors import CORS
 import warnings
 from transformers import BertTokenizer, BertModel
 
@@ -25,12 +26,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 class UnifiedVoiceApp:
     def __init__(self):
-        # Flask sunucusu oluştur
-        self.setup_flask_server()
-        
         # Speech Recognition ayarları - Dengeli ve gerçekçi eşik değerleri
         self.recognizer = sr.Recognizer()
-        self.recognizer.energy_threshold = 300  # Orta seviye eşik - gerçekçi ses tanıma
+        self.recognizer.energy_threshold = 200  # Orta seviye eşik - gerçekçi ses tanıma
         self.recognizer.dynamic_energy_threshold = False  # Dinamik eşik kapatıldı
         self.recognizer.pause_threshold = 0.8  # Konuşma arası beklemeler için uygun
         self.recognizer.phrase_threshold = 0.3  # Normal başlatma eşiği
@@ -38,7 +36,7 @@ class UnifiedVoiceApp:
         
         # Streaming için ek ayarlar - Dengeli VB-Cable ayarları
         self.stream_chunk_duration = 1.0  # Dengeli chunk süresi
-        self.min_audio_length = 0.3  # Minimum 300ms ses - gerçekçi
+        self.min_audio_length = 0.3  # Minimum 200ms ses - gerçekçi
         
         # Ses ayarları - Dengeli sistem ayarları
         self.format = pyaudio.paInt16
@@ -104,17 +102,24 @@ class UnifiedVoiceApp:
         self.last_error_time = None
         self.max_consecutive_errors = 5
         
-        # Dosya isimleri
+        # 10 saniyelik lifetime dosyalar (sürekli temizlenen)
+        self.user_lifetime_file = "kullanici_10s_lifetime.txt"
+        self.system_lifetime_file = "sistem_10s_lifetime.txt"
+        
+        # Session dosyalar (uygulama açık olduğu sürece tutulan)
+        self.user_session_file = "kullanici_session_full.txt"
+        self.system_session_file = "sistem_session_full.txt"
+        
+        # Eski dosya isimleri (uyumluluk için)
         self.user_output_file = "kullanici_metinleri.txt"
         self.system_output_file = "sistem_metinleri.txt"
         
-        # Sabit session dosyaları - Her seferinde aynı dosyalar
-        self.user_session_file = "user_session_script.txt"
-        self.system_session_file = "system_session_script.txt"
-        
-        # Flask sunucu ayarları
-        self.flask_url = "http://localhost:5000"
+        # Flask sunucu ayarları - Port 5002'ye güncellendi
+        self.flask_url = "http://127.0.0.1:5002"
         self.flask_enabled = True
+        
+        # Flask sunucusu oluştur (URL tanımlandıktan sonra)
+        self.setup_flask_server()
         
         # UI oluştur
         self.create_ui()
@@ -123,13 +128,32 @@ class UnifiedVoiceApp:
         """Flask sunucusunu kurar ve başlatır"""
         # Flask uygulaması oluştur
         self.flask_app = Flask(__name__)
+        
+        # CORS desteği ekle
+        CORS(self.flask_app)
+        
         self.flask_app.config['JSON_AS_ASCII'] = False  # Türkçe karakter desteği
-        self.flask_app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+        self.flask_app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # Prettify kapatıldı - hız için
+        # Ultra performans optimizasyonları
+        self.flask_app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Cache yok
+        self.flask_app.config['TEMPLATES_AUTO_RELOAD'] = False  # Template reload yok
+        self.flask_app.config['EXPLAIN_TEMPLATE_LOADING'] = False  # Template debug yok
+        self.flask_app.config['PROPAGATE_EXCEPTIONS'] = True  # Hızlı exception handling
         
         # 20 saniyelik veri için deque - performans iyileştirmesi
         self.user_texts_flask = deque(maxlen=2000)  # Daha fazla kapasite
         self.system_texts_flask = deque(maxlen=2000)  # Daha fazla kapasite
         self.flask_data_lock = threading.RLock()  # RLock performans iyileştirmesi
+        
+        # BERT analiz cache'i - HIZLANDIRMA (Eksik olan değişkenler)
+        self.focus_analyzer = None  # Tek seferlik yükleme için
+        self.last_focus_analysis_time = 0
+        self.cached_focus_result = {'focus_score': None, 'focus_grade': None, 'focus_category': None, 'focus_emoji': None}
+        self.focus_analysis_cooldown = 2.0  # 2 saniye cooldown
+        
+        # Kalibrasyon durumu değişkenleri
+        self.calibration_status = 'idle'  # idle, running, completed, error
+        self.calibration_result = None
         
         # Flask route'ları ekle
         self.setup_flask_routes()
@@ -219,17 +243,36 @@ class UnifiedVoiceApp:
                                 for item in self.user_texts_flask]
                     system_list = [{'text': item['text'], 'time': item['time']} 
                                   for item in self.system_texts_flask]
-                # Odak analizi ekle
+                
+                # HIZLI Odak analizi - Cache'den kullan
+                current_time = time.time()
                 try:
-                    from optimized_voice_comparison import LessonFocusAnalyzer
-                    analyzer = LessonFocusAnalyzer()
-                    # Son sistem ve kullanıcı metinlerini birleştir
-                    system_text = ' '.join([item['text'] for item in system_list if item['text']])
-                    user_text = ' '.join([item['text'] for item in user_list if item['text']])
-                    # Odak analizi sonucu
-                    focus_result = analyzer.analyze_lesson_focus(system_text, user_text)
+                    # Cooldown kontrolü - 2 saniyede bir analiz
+                    if (current_time - self.last_focus_analysis_time) > self.focus_analysis_cooldown:
+                        # BERT analyzer'ı tek seferlik yükle
+                        if self.focus_analyzer is None:
+                            from optimized_voice_comparison import LessonFocusAnalyzer
+                            self.focus_analyzer = LessonFocusAnalyzer()
+                            print("🧠 BERT analyzer cache'den yüklendi")
+                        
+                        # Son sistem ve kullanıcı metinlerini birleştir
+                        system_text = ' '.join([item['text'] for item in system_list if item['text']])
+                        user_text = ' '.join([item['text'] for item in user_list if item['text']])
+                        
+                        # Sadece yeni metin varsa analiz et
+                        if system_text or user_text:
+                            focus_result = self.focus_analyzer.analyze_lesson_focus(system_text, user_text)
+                            self.cached_focus_result = focus_result
+                            self.last_focus_analysis_time = current_time
+                        else:
+                            focus_result = self.cached_focus_result
+                    else:
+                        # Cache'den sonucu kullan
+                        focus_result = self.cached_focus_result
+                        
                 except Exception as focus_e:
-                    focus_result = {'focus_score': None, 'focus_grade': None, 'focus_category': None, 'focus_emoji': None}
+                    print(f"⚠️ Odak analizi hatası: {focus_e}")
+                    focus_result = self.cached_focus_result
                 response_data = {
                     'user_texts': user_list,
                     'system_texts': system_list,
@@ -274,23 +317,236 @@ class UnifiedVoiceApp:
                 
             except Exception as e:
                 return jsonify({'error': f'Server error: {str(e)}'}), 500
+        
+        @self.flask_app.route('/api/voice_control/start', methods=['POST'])
+        def start_voice_recognition():
+            """Ses tanımayı başlatma endpoint'i"""
+            try:
+                if not self.is_user_listening and not self.is_system_recording:
+                    # Her ikisini de başlat
+                    self.start_user_listening()
+                    self.start_system_recording()
+                    
+                    return jsonify({
+                        'status': 'success',
+                        'message': 'Ses tanıma başlatıldı',
+                        'is_user_listening': self.is_user_listening,
+                        'is_system_recording': self.is_system_recording,
+                        'action': 'started'
+                    })
+                else:
+                    return jsonify({
+                        'status': 'info',
+                        'message': 'Ses tanıma zaten aktif',
+                        'is_user_listening': self.is_user_listening,
+                        'is_system_recording': self.is_system_recording,
+                        'action': 'already_active'
+                    })
+                    
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Ses tanıma başlatılamadı: {str(e)}',
+                    'is_user_listening': self.is_user_listening,
+                    'is_system_recording': self.is_system_recording
+                }), 500
+        
+        @self.flask_app.route('/api/voice_control/stop', methods=['POST'])
+        def stop_voice_recognition():
+            """Ses tanımayı durdurma endpoint'i"""
+            try:
+                # Her ikisini de durdur
+                if self.is_user_listening:
+                    self.stop_user_listening_func()
+                if self.is_system_recording:
+                    self.stop_system_recording()
+                
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Ses tanıma durduruldu',
+                    'is_user_listening': self.is_user_listening,
+                    'is_system_recording': self.is_system_recording,
+                    'action': 'stopped'
+                })
+                
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Ses tanıma durdurulamadı: {str(e)}',
+                    'is_user_listening': self.is_user_listening,
+                    'is_system_recording': self.is_system_recording
+                }), 500
+        
+        @self.flask_app.route('/api/voice_control/status')
+        def get_voice_status():
+            """Ses tanıma durumunu kontrol etme endpoint'i"""
+            try:
+                return jsonify({
+                    'status': 'success',
+                    'is_user_listening': self.is_user_listening,
+                    'is_system_recording': self.is_system_recording,
+                    'is_active': self.is_user_listening or self.is_system_recording,
+                    'energy_threshold': getattr(self.recognizer, 'energy_threshold', 200),
+                    'input_device_index': self.input_device_index,
+                    'device_info': {
+                        'input_device_available': self.input_device_index is not None,
+                        'microphone_available': hasattr(self, 'microphone')
+                    }
+                })
+                
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Durum bilgisi alınamadı: {str(e)}'
+                }), 500
+        
+        @self.flask_app.route('/api/voice_control/calibrate', methods=['POST'])
+        def calibrate_microphone():
+            """Mikrofon kalibrasyonu endpoint'i"""
+            try:
+                # Kalibrasyon thread'ini başlat
+                def calibration_process():
+                    try:
+                        # Kalibrasyonu başlat
+                        self.calibration_status = 'running'
+                        self.calibration_result = None
+                        
+                        # 5 saniye ses toplama simülasyonu
+                        import numpy as np
+                        volume_samples = []
+                        
+                        # Gerçek kalibrasyon kodu burada olacak
+                        # Şimdilik örnek değerler
+                        start_time = time.time()
+                        while time.time() - start_time < 3:  # 3 saniye kısa test
+                            try:
+                                with self.microphone as source:
+                                    audio = self.recognizer.listen(source, timeout=0.5, phrase_time_limit=0.5)
+                                    if audio:
+                                        audio_data = audio.get_raw_data()
+                                        if audio_data:
+                                            audio_array = np.frombuffer(audio_data, dtype=np.int16)
+                                            if len(audio_array) > 0:
+                                                volume = np.sqrt(np.mean(audio_array.astype(np.float32)**2))
+                                                volume_samples.append(volume)
+                            except:
+                                continue
+                        
+                        if volume_samples:
+                            avg_volume = np.mean(volume_samples)
+                            balanced_threshold = int(avg_volume * 0.5)
+                            
+                            # Eşik değerini uygula
+                            self.recognizer.energy_threshold = balanced_threshold
+                            
+                            self.calibration_result = {
+                                'avg_volume': float(avg_volume),
+                                'new_threshold': balanced_threshold,
+                                'samples_count': len(volume_samples),
+                                'success': True
+                            }
+                        else:
+                            # Varsayılan değer
+                            self.recognizer.energy_threshold = 200
+                            self.calibration_result = {
+                                'new_threshold': 200,
+                                'samples_count': 0,
+                                'success': False,
+                                'message': 'Ses algılanamadı, varsayılan değer kullanıldı'
+                            }
+                        
+                        self.calibration_status = 'completed'
+                        
+                    except Exception as e:
+                        self.calibration_status = 'error'
+                        self.calibration_result = {
+                            'success': False,
+                            'error': str(e)
+                        }
+                
+                # Kalibrasyon thread'ini başlat
+                threading.Thread(target=calibration_process, daemon=True).start()
+                
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Kalibrasyon başlatıldı',
+                    'calibration_status': 'started',
+                    'estimated_duration': 3
+                })
+                
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Kalibrasyon başlatılamadı: {str(e)}'
+                }), 500
+        
+        @self.flask_app.route('/api/voice_control/calibrate/status')
+        def get_calibration_status():
+            """Kalibrasyon durumunu kontrol etme endpoint'i"""
+            try:
+                status = getattr(self, 'calibration_status', 'idle')
+                result = getattr(self, 'calibration_result', None)
+                
+                response_data = {
+                    'status': 'success',
+                    'calibration_status': status,
+                    'current_threshold': getattr(self.recognizer, 'energy_threshold', 200)
+                }
+                
+                if result:
+                    response_data['calibration_result'] = result
+                
+                return jsonify(response_data)
+                
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Kalibrasyon durumu alınamadı: {str(e)}'
+                }), 500
+        
+        @self.flask_app.route('/api/voice_control/clear_texts', methods=['POST'])
+        def clear_all_texts():
+            """Tüm metinleri temizleme endpoint'i"""
+            try:
+                with self.flask_data_lock:
+                    self.user_texts_flask.clear()
+                    self.system_texts_flask.clear()
+                
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Tüm metinler temizlendi',
+                    'user_texts_count': 0,
+                    'system_texts_count': 0
+                })
+                
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Metinler temizlenemedi: {str(e)}'
+                }), 500
     
     def start_flask_background(self):
-        """Flask sunucusunu arka planda başlatır - İyileştirilmiş"""
+        """Flask sunucusunu arka planda başlatır - Ultra hızlı optimizasyon"""
         def run_flask():
             try:
-                # Performans iyileştirmeleri
+                print(f"🚀 Flask sunucu başlatılıyor: {self.flask_url}")
+                # Ultra performans iyileştirmeleri
                 self.flask_app.run(
-                    host='0.0.0.0', 
+                    host='127.0.0.1',  # localhost yerine 127.0.0.1 kullan
                     port=5002, 
                     debug=False, 
                     threaded=True, 
                     use_reloader=False,
-                    processes=1  # Tek process daha kararlı
+                    processes=1,  # Tek process daha kararlı
+                    request_handler=None,  # Varsayılan handler kullan
+                    passthrough_errors=False,  # Hata yakalama optimizasyonu
+                    ssl_context=None,  # SSL yok - hız için
+                    load_dotenv=False  # .env dosyası yüklememe - hız için
                 )
             except OSError as e:
                 if "Address already in use" in str(e):
-                    print("⚠️ Port 5000 kullanımda, Flask sunucu başlatılamadı")
+                    print("⚠️ Port 5002 kullanımda, Flask sunucu başlatılamadı")
+                    print("💡 Çözüm: Başka bir terminal açın ve 'netstat -ano | findstr :5002' çalıştırın")
                 else:
                     print(f"⚠️ Flask sunucu hatası: {e}")
             except Exception as e:
@@ -299,8 +555,20 @@ class UnifiedVoiceApp:
         flask_thread = threading.Thread(target=run_flask, daemon=True)
         flask_thread.start()
         
-        # Flask'ın başlaması için optimized bekle
-        time.sleep(0.5)  # Daha hızlı başlatma
+        # Flask'ın başlaması için daha uzun bekle ve test et
+        for i in range(10):  # 10 saniye boyunca dene
+            time.sleep(1.0)
+            try:
+                response = requests.get("http://127.0.0.1:5002/api/stats", timeout=1)
+                if response.status_code == 200:
+                    print("✅ Flask sunucu başarıyla çalışıyor!")
+                    break
+            except:
+                if i == 9:  # Son deneme
+                    print("❌ Flask sunucu 10 saniye içinde başlatılamadı!")
+                continue
+        
+        print("✅ Flask sunucu thread başlatıldı")
     
     def clean_old_flask_data(self):
         """20 saniyeden eski Flask verilerini temizler - Optimized"""
@@ -332,12 +600,15 @@ class UnifiedVoiceApp:
     
     def instant_api_sender(self):
         """Anında API gönderim thread'i - Ultra hızlı"""
+        print("🚀 API sender thread başlatıldı")
         while True:
             try:
                 if not self.api_send_queue.empty():
                     data = self.api_send_queue.get_nowait()
                     text = data['text']
                     text_type = data['type']
+                    
+                    print(f"📤 Queue'den alındı: [{text_type}] {text[:30]}...")
                     
                     # Async HTTP request simulation (non-blocking)
                     threading.Thread(
@@ -346,12 +617,13 @@ class UnifiedVoiceApp:
                         daemon=True
                     ).start()
                 
-                time.sleep(0.01)  # 10ms check interval (ultra fast)
+                time.sleep(0.1)  # 100ms check interval
                 
             except queue.Empty:
-                time.sleep(0.05)
+                time.sleep(0.2)
             except Exception as e:
-                time.sleep(0.1)
+                print(f"⚠️ API sender hatası: {e}")
+                time.sleep(0.5)
         
     def find_best_output_device(self):
         """En uygun ses çıkış cihazını bulur"""
@@ -462,7 +734,7 @@ class UnifiedVoiceApp:
         # Session bilgi etiketi
         session_timestamp = self.session_start_time.strftime("%Y%m%d_%H%M%S")
         session_info_label = tk.Label(header_frame, 
-                                     text=f"📋 Session: {session_timestamp} | 🗂️ Dosyalar: user_session_script.txt, system_session_script.txt", 
+                                     text=f"📋 Session: {session_timestamp} | 🗂️ Dosyalar: 10s lifetime + session full + uyumluluk dosyaları", 
                                      font=("Segoe UI", 9), bg='#0d1117', fg='#58a6ff', wraplength=1300)
         session_info_label.pack(pady=(8, 0))
         
@@ -556,18 +828,14 @@ class UnifiedVoiceApp:
                                                             relief='flat', bd=0, selectbackground='#1e3a8a')
         self.system_text_display.pack(fill=tk.BOTH, expand=True)
         
-        # İlk mesajları ekle
+        # İlk mesajları ekle - sadece dosya kayıtları
         session_timestamp = self.session_start_time.strftime("%Y%m%d_%H%M%S")
-        self.add_user_text("Mikrofon ses tanıma hazır...")
-        self.add_user_text(f"📋 Session başlatıldı: {session_timestamp}")
-        self.add_user_text(f"📄 Kayıt dosyası: {self.user_session_file}")
-        
-        self.add_system_text("Sistem ses tanıma hazır...")
-        self.add_system_text(f"📋 Session başlatıldı: {session_timestamp}")
-        self.add_system_text(f"📄 Kayıt dosyası: {self.system_session_file}")
         
         # Dosyalar oluştur
         self.create_output_files()
+        
+        # 10 saniyelik temizleme thread'ini başlat
+        self.start_lifetime_cleaner()
         
         # UI güncelleme thread'ini başlat
         self.start_ui_updater()
@@ -593,40 +861,186 @@ class UnifiedVoiceApp:
             self.update_status("Sistem durduruldu ⏸️")
     
     def create_output_files(self):
-        """Çıktı dosyalarını oluşturur - Sabit dosya isimleriyle"""
-        # Genel dosyalar
-        for filename in [self.user_output_file, self.system_output_file]:
-            if not os.path.exists(filename):
-                with open(filename, "w", encoding="utf-8") as f:
-                    file_type = "Kullanıcı" if "kullanici" in filename else "Sistem"
-                    f.write(f"=== {file_type} Sesleri Tanıma Metinleri - {datetime.now().strftime('%Y-%m-%d')} ===\n\n")
+        """Çıktı dosyalarını oluşturur - Her başlangıçta sıfırdan yazılır"""
+        # Tüm dosyaları sil ve sıfırdan oluştur
+        all_files = [
+            # 10 saniyelik lifetime dosyalar
+            self.user_lifetime_file,        # kullanici_10s_lifetime.txt
+            self.system_lifetime_file,      # sistem_10s_lifetime.txt
+            # Session dosyalar (uygulama boyunca tutulan)
+            self.user_session_file,         # kullanici_session_full.txt
+            self.system_session_file,       # sistem_session_full.txt
+            # Eski uyumluluk dosyalar
+            self.user_output_file,          # kullanici_metinleri.txt
+            self.system_output_file,        # sistem_metinleri.txt
+        ]
         
-        # Sabit session dosyaları - Her seferinde sıfırdan yazılır
+        # Önce mevcut dosyaları sil
+        for filename in all_files:
+            try:
+                if os.path.exists(filename):
+                    os.remove(filename)
+                    print(f"🗑️ Eski dosya silindi: {filename}")
+            except Exception as e:
+                print(f"⚠️ Dosya silinirken hata: {filename} - {e}")
+        
+        # 10 saniyelik lifetime dosyalarını oluştur
+        lifetime_files = [
+            (self.user_lifetime_file, "Kullanıcı 10s Lifetime"),
+            (self.system_lifetime_file, "Sistem 10s Lifetime")
+        ]
+        
+        for filename, file_type in lifetime_files:
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(f"=== {file_type} Metinleri ===\n")
+                f.write(f"Oluşturulma: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write("NOT: Bu dosya 10 saniye boyunca veri tutar, sonra temizlenir.\n")
+                f.write("=" * 50 + "\n\n")
+            print(f"✅ Lifetime dosya oluşturuldu: {filename}")
+        
+        # Session dosyalarını oluştur
         session_files = [
-            (self.user_session_file, "Kullanıcı Session Transkripti"),
-            (self.system_session_file, "Sistem Session Transkripti")
+            (self.user_session_file, "Kullanıcı Session Full"),
+            (self.system_session_file, "Sistem Session Full")
         ]
         
         for filename, file_type in session_files:
-            # Dosyayı her seferinde sıfırdan oluştur (w modu)
             with open(filename, "w", encoding="utf-8") as f:
-                f.write(f"=== {file_type} ===\n")
+                f.write(f"=== {file_type} Transkripti ===\n")
                 f.write(f"Session Başlangıç: {self.session_start_time.strftime('%Y-%m-%d %H:%M:%S')}\n")
                 f.write(f"Dosya: {filename}\n")
+                f.write("NOT: Bu dosya uygulama açık olduğu sürece tüm verileri tutar.\n")
                 f.write("=" * 50 + "\n\n")
+            print(f"✅ Session dosya oluşturuldu: {filename}")
+        
+        # Eski uyumluluk dosyalarını oluştur
+        for filename in [self.user_output_file, self.system_output_file]:
+            with open(filename, "w", encoding="utf-8") as f:
+                file_type = "Kullanıcı" if "kullanici" in filename else "Sistem"
+                f.write(f"=== {file_type} Sesleri Tanıma Metinleri - {datetime.now().strftime('%Y-%m-%d')} ===\n\n")
+            print(f"✅ Uyumluluk dosya oluşturuldu: {filename}")
+    
+    def start_lifetime_cleaner(self):
+        """10 saniyelik lifetime temizleyici thread'ini başlatır"""
+        def lifetime_cleaner():
+            print("🧹 10 saniyelik lifetime temizleyici başlatıldı")
+            while True:
+                try:
+                    current_time = datetime.now()
+                    cutoff_time = current_time - timedelta(seconds=10)  # 10 saniye
+                    
+                    # Kullanıcı lifetime dosyasını temizle
+                    self.clean_lifetime_file(self.user_lifetime_file, cutoff_time, "Kullanıcı")
+                    
+                    # Sistem lifetime dosyasını temizle
+                    self.clean_lifetime_file(self.system_lifetime_file, cutoff_time, "Sistem")
+                    
+                    time.sleep(2)  # 2 saniyede bir kontrol et
+                    
+                except Exception as e:
+                    print(f"⚠️ Lifetime temizleme hatası: {e}")
+                    time.sleep(5)
+        
+        # Thread'i başlat
+        lifetime_thread = threading.Thread(target=lifetime_cleaner, daemon=True)
+        lifetime_thread.start()
+    
+    def clean_lifetime_file(self, filename, cutoff_time, file_type):
+        """Belirtilen dosyadaki 10 saniyeden eski verileri temizler"""
+        try:
+            if not os.path.exists(filename):
+                return
+            
+            # Dosyayı oku
+            with open(filename, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            
+            # Header satırları (ilk 4 satır) koru
+            header_lines = []
+            content_lines = []
+            
+            for i, line in enumerate(lines):
+                if i < 4 or line.startswith("===") or line.startswith("NOT:"):
+                    header_lines.append(line)
+                else:
+                    content_lines.append(line)
+            
+            # 10 saniyeden yeni verileri filtrele
+            new_content_lines = []
+            for line in content_lines:
+                try:
+                    # [YYYY-MM-DD HH:MM:SS] formatını ara
+                    if line.startswith("[") and "]" in line:
+                        timestamp_str = line[1:line.index("]")]
+                        try:
+                            line_time = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+                            if line_time > cutoff_time:  # 10 saniyeden yeni
+                                new_content_lines.append(line)
+                        except ValueError:
+                            # Timestamp parse edilemezse satırı koru
+                            new_content_lines.append(line)
+                    else:
+                        # Timestamp yoksa satırı koru
+                        new_content_lines.append(line)
+                except:
+                    # Hata durumunda satırı koru
+                    new_content_lines.append(line)
+            
+            # Dosyayı yeniden yaz
+            with open(filename, "w", encoding="utf-8") as f:
+                f.writelines(header_lines)
+                f.writelines(new_content_lines)
+                
+        except Exception as e:
+            print(f"⚠️ {file_type} lifetime temizleme hatası: {e}")
+    
+    def is_real_speech_text(self, text):
+        """Gerçek konuşma metni olup olmadığını kontrol eder"""
+        if not text or len(text.strip()) < 2:
+            return False
+        
+        # Sistem mesajlarını filtrele
+        system_indicators = ['❌', '✅', '⚠️', '🔍', '💡', '🔧', '📊', '🎯', '⚡', '🚀']
+        if any(indicator in text for indicator in system_indicators):
+            return False
+        
+        # Çok kısa metinleri filtrele
+        if len(text.strip()) < 3:
+            return False
+            
+        return True
     
     def add_user_text(self, text):
-        """Kullanıcı paneline sadece net cümleleri ekler"""
+        """Kullanıcı paneline sadece net cümleleri ekler - 3 dosya sistemli"""
         timestamp = datetime.now().strftime("%H:%M:%S")
         full_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_text = f"[{timestamp}] {text}\n\n"
+        formatted_full = f"[{full_timestamp}] {text}\n"
         
-        # Session dosyasına kaydet
+        # 1. Lifetime dosyasına kaydet (10 saniyelik)
+        try:
+            with open(self.user_lifetime_file, "a", encoding="utf-8") as f:
+                f.write(formatted_full)
+        except Exception as e:
+            print(f"Lifetime kayıt hatası (user): {e}")
+        
+        # 2. Session dosyasına kaydet (uygulama boyunca)
         try:
             with open(self.user_session_file, "a", encoding="utf-8") as f:
-                f.write(f"[{full_timestamp}] {text}\n")
+                f.write(formatted_full)
         except Exception as e:
             print(f"Session kayıt hatası (user): {e}")
+        
+        # 3. Eski uyumluluk dosyasına kaydet
+        try:
+            with open(self.user_output_file, "a", encoding="utf-8") as f:
+                f.write(formatted_full)
+        except Exception as e:
+            print(f"Uyumluluk kayıt hatası (user): {e}")
+        
+        # Flask API'ye gönder - ÖNEMLİ! (Sadece gerçek konuşma metinleri)
+        if self.is_real_speech_text(text):
+            self.send_to_flask(text, "user")
         
         def update_ui():
             self.user_text_display.config(state=tk.NORMAL)
@@ -637,17 +1051,36 @@ class UnifiedVoiceApp:
         self.root.after(0, update_ui)
     
     def add_system_text(self, text):
-        """Sistem paneline sadece net cümleleri ekler"""
+        """Sistem paneline sadece net cümleleri ekler - 3 dosya sistemli"""
         timestamp = datetime.now().strftime("%H:%M:%S")
         full_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         formatted_text = f"[{timestamp}] {text}\n\n"
+        formatted_full = f"[{full_timestamp}] {text}\n"
         
-        # Session dosyasına kaydet
+        # 1. Lifetime dosyasına kaydet (10 saniyelik)
+        try:
+            with open(self.system_lifetime_file, "a", encoding="utf-8") as f:
+                f.write(formatted_full)
+        except Exception as e:
+            print(f"Lifetime kayıt hatası (system): {e}")
+        
+        # 2. Session dosyasına kaydet (uygulama boyunca)
         try:
             with open(self.system_session_file, "a", encoding="utf-8") as f:
-                f.write(f"[{full_timestamp}] {text}\n")
+                f.write(formatted_full)
         except Exception as e:
             print(f"Session kayıt hatası (system): {e}")
+        
+        # 3. Eski uyumluluk dosyasına kaydet
+        try:
+            with open(self.system_output_file, "a", encoding="utf-8") as f:
+                f.write(formatted_full)
+        except Exception as e:
+            print(f"Uyumluluk kayıt hatası (system): {e}")
+        
+        # Flask API'ye gönder - ÖNEMLİ! (Sadece gerçek konuşma metinleri)
+        if self.is_real_speech_text(text):
+            self.send_to_flask(text, "system")
         
         def update_ui():
             self.system_text_display.config(state=tk.NORMAL)
@@ -673,30 +1106,73 @@ class UnifiedVoiceApp:
         if not self.flask_enabled or not text.strip():
             return
         
+        # Debug çıktısı
+        print(f"🔄 Flask queue'ye ekleniyor: [{text_type}] {text[:50]}...")
+        
         # API gönderim queue'sine ekle (anında işlem)
         try:
             self.api_send_queue.put_nowait({
                 'text': text.strip(),
                 'type': text_type
             })
+            print(f"✅ Queue'ye eklendi: [{text_type}]")
         except queue.Full:
+            print(f"⚠️ Queue dolu, atlanıyor: [{text_type}]")
             pass  # Queue doluysa skip et (performans için)
     
     def send_to_flask_immediate(self, text, text_type):
-        """Anında Flask'a gönderim - Non-blocking"""
-        try:
-            endpoint = f"{self.flask_url}/add_user_text" if text_type == "user" else f"{self.flask_url}/add_system_text"
-            headers = {'Content-Type': 'application/json; charset=utf-8'}
-            
-            # Ultra kısa timeout
-            response = requests.post(
-                endpoint, 
-                json={'text': text}, 
-                headers=headers,
-                timeout=0.3  # 300ms timeout (çok hızlı)
+        """Flask'a ultra hızlı veri gönderme fonksiyonu - Optimize edilmiş"""
+        if text_type == "user":
+            endpoint = f"{self.flask_url}/add_user_text"
+        else:
+            endpoint = f"{self.flask_url}/add_system_text"
+        
+        # Session'ı tekrar kullan - bağlantı pool'u için
+        if not hasattr(self, '_session'):
+            import requests
+            self._session = requests.Session()
+            # Keep-alive ve connection pooling
+            adapter = requests.adapters.HTTPAdapter(
+                pool_connections=1,
+                pool_maxsize=2,
+                max_retries=0  # Retry'ı manuel yap
             )
-        except:
-            pass  # Hızlı fail, UI'ı engelleme
+            self._session.mount('http://', adapter)
+            self._session.headers.update({'Content-Type': 'application/json'})
+        
+        max_retries = 2  # 3'ten 2'ye düşür - hız için
+        for attempt in range(max_retries):
+            try:
+                response = self._session.post(
+                    endpoint, 
+                    json={"text": text}, 
+                    timeout=2  # 5'ten 2'ye düşür - çok daha hızlı
+                )
+                if response.status_code == 200:
+                    # Debug çıktısını azalt - performans için
+                    if attempt == 0:  # Sadece ilk denemede log
+                        print(f"✅ Flask OK ({text_type}): {text[:30]}...")
+                    return  # Başarılı, fonksiyondan çık
+                else:
+                    print(f"❌ Flask yanıt hatası ({text_type}): {response.status_code}")
+                    
+            except requests.exceptions.ConnectionError as e:
+                if attempt < max_retries - 1:
+                    print(f"⚠️ Bağlantı hatası, yeniden deneniyor... ({attempt + 1}/{max_retries})")
+                    time.sleep(0.2)  # 0.5'ten 0.2'ye - çok daha hızlı
+                else:
+                    print(f"❌ Flask bağlantı hatası ({text_type}): {e}")
+                    
+            except requests.exceptions.Timeout as e:
+                if attempt < max_retries - 1:
+                    print(f"⚠️ Timeout hatası, yeniden deneniyor... ({attempt + 1}/{max_retries})")
+                    time.sleep(0.1)  # 0.5'ten 0.1'e - çok daha hızlı
+                else:
+                    print(f"❌ Flask timeout hatası ({text_type}): {e}")
+                    
+            except Exception as e:
+                print(f"❌ Flask genel hatası ({text_type}): {e}")
+                break  # Diğer hatalar için yeniden deneme
     
     def handle_stt_error(self, error_type, error_msg):
         """STT hatalarını yönetir ve kullanıcıya bilgi verir"""
@@ -742,27 +1218,47 @@ class UnifiedVoiceApp:
     def test_api(self):
         """API'yi test eder"""
         try:
-            response = requests.get(f"{self.flask_url}/api/stats", timeout=2)
+            print("🔍 Flask API testi yapılıyor...")
+            response = requests.get(f"{self.flask_url}/api/stats", timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                total = data.get('total_count', 0)
-                self.update_status(f"✅ API çalışıyor! Toplam: {total} cümle")
+                total_user = data.get('user_texts_count', 0)
+                total_system = data.get('system_texts_count', 0)
+                total = total_user + total_system
+                self.update_status(f"✅ API çalışıyor! User: {total_user}, System: {total_system}")
+                print(f"✅ Flask API çalışıyor - User: {total_user}, System: {total_system}")
             else:
                 self.update_status("⚠️ API yanıt vermiyor")
-        except:
+                print(f"⚠️ Flask API yanıt kodu: {response.status_code}")
+        except requests.exceptions.ConnectionError:
+            self.update_status("❌ Flask sunucu çalışmıyor")
+            print("❌ Flask sunucusuna bağlanılamıyor!")
+            print("💡 Çözüm: Uygulamayı yeniden başlatın")
+        except Exception as e:
             self.update_status("❌ API bağlantısı başarısız")
+            print(f"❌ Flask API test hatası: {e}")
+    
+    def check_flask_status(self):
+        """Flask durumunu kontrol eder"""
+        try:
+            response = requests.get(f"{self.flask_url}/api/stats", timeout=2)
+            if response.status_code == 200:
+                print("✅ Flask sunucu başarıyla çalışıyor ve erişilebilir!")
+                self.update_status("Flask API hazır ✅")
+            else:
+                print(f"⚠️ Flask yanıt kodu: {response.status_code}")
+                self.update_status("Flask API sorunlu ⚠️")
+        except:
+            print("❌ Flask sunucusuna erişilemiyor!")
+            self.update_status("Flask API erişilemiyor ❌")
+            self.add_system_text("❌ Flask sunucu başlatılamadı!")
+            self.add_system_text("💡 Çözüm: Uygulamayı kapatıp yeniden açın")
     
     def manual_calibration(self):
         """Manuel eşik ayarı - Kullanıcı ile etkileşimli kalibrasyon"""
         def calibration_thread():
             try:
                 self.update_status("🎯 Manuel kalibrasyon başlatılıyor...")
-                self.add_system_text("🎯 === MANUEL KALİBRASYON MODU ===")
-                self.add_system_text("📊 Mevcut mikrofon eşik değeri: " + str(self.recognizer.energy_threshold))
-                
-                # Önce mevcut ses seviyesini ölçelim
-                self.add_system_text("🔊 5 saniye boyunca mikrofona konuşun...")
-                self.add_system_text("💡 Normal konuşma seviyenizde test edin")
                 
                 # Ses seviyelerini toplamak için
                 volume_samples = []
@@ -791,36 +1287,21 @@ class UnifiedVoiceApp:
                     max_volume = np.max(volume_samples)
                     min_volume = np.min(volume_samples)
                     
-                    self.add_system_text(f"📊 === KALİBRASYON SONUÇLARI ===")
-                    self.add_system_text(f"🔊 Ortalama ses seviyesi: {avg_volume:.1f}")
-                    self.add_system_text(f"🔊 Maksimum ses seviyesi: {max_volume:.1f}")
-                    self.add_system_text(f"🔊 Minimum ses seviyesi: {min_volume:.1f}")
-                    
                     # Önerilen eşik değerleri
                     conservative_threshold = int(avg_volume * 0.3)  # Muhafazakar
                     balanced_threshold = int(avg_volume * 0.5)     # Dengeli
                     sensitive_threshold = int(avg_volume * 0.7)    # Hassas
                     
-                    self.add_system_text(f"\n🎯 === ÖNERİLEN EŞİK DEĞERLERİ ===")
-                    self.add_system_text(f"🟢 Muhafazakar (Az hassas): {conservative_threshold}")
-                    self.add_system_text(f"🟡 Dengeli (Önerilen): {balanced_threshold}")
-                    self.add_system_text(f"🔴 Hassas (Çok hassas): {sensitive_threshold}")
-                    
                     # Dengeli değeri otomatik uygula
                     self.recognizer.energy_threshold = balanced_threshold
                     self.update_status(f"✅ Kalibrasyon tamamlandı! Eşik: {balanced_threshold}")
-                    self.add_system_text(f"✅ Dengeli eşik değeri uygulandı: {balanced_threshold}")
-                    self.add_system_text("💡 Kalibre Et butonuna tekrar tıklayarak farklı değerler deneyebilirsiniz")
                     
                 else:
-                    self.add_system_text("❌ Kalibrasyon sırasında ses algılanamadı!")
-                    self.add_system_text("💡 Mikrofonunuzun çalıştığından emin olun")
-                    self.recognizer.energy_threshold = 300  # Varsayılan değer
+                    self.recognizer.energy_threshold = 200  # Varsayılan değer
                     self.update_status("⚠️ Kalibrasyon başarısız - varsayılan değer kullanılıyor")
                     
             except Exception as e:
-                self.add_system_text(f"❌ Kalibrasyon hatası: {e}")
-                self.recognizer.energy_threshold = 300
+                self.recognizer.energy_threshold = 200
                 self.update_status("❌ Kalibrasyon hatası - varsayılan değer")
         
         # Kalibrasyon thread'ini başlat
@@ -907,7 +1388,7 @@ class UnifiedVoiceApp:
         try:
             # Gerçekçi eşik değeri kullan
             if not hasattr(self, 'calibrated') or not self.calibrated:
-                self.recognizer.energy_threshold = 300  # Varsayılan dengeli değer
+                self.recognizer.energy_threshold = 200  # Varsayılan dengeli değer
             
             # Dinlemeyi başlat
             self.stop_user_listening = self.recognizer.listen_in_background(self.microphone, self.user_audio_callback)
@@ -936,27 +1417,16 @@ class UnifiedVoiceApp:
             print("❌ VB-Cable cihazı bulunamadı!")
             return
         
-        # Device bilgisini göster
+        # Device bilgisini göster - sadece console log
         try:
             device_info = self.audio.get_device_info_by_index(self.input_device_index)
             device_name = device_info.get('name', 'Bilinmeyen')
             sample_rate = device_info.get('defaultSampleRate', 'Bilinmiyor')
             print(f"🎤 Sistem ses kaydı cihazı: {device_name}")
             print(f"📊 Örnek rate: {sample_rate} Hz, Kanal: {self.channels}")
-            
-            self.add_system_text(f"🎯 Bağlanan cihaz: {device_name}")
-            self.add_system_text(f"📊 Ayarlar: {self.rate}Hz, {self.channels} kanal")
-            
-            # VB-Audio kontrolü
-            if 'cable' in device_name.lower() or 'vb-audio' in device_name.lower():
-                self.add_system_text("✅ VB-Audio cihazı aktif")
-                self.add_system_text("💡 Windows ses çıkışının 'CABLE Input' olduğundan emin olun")
-            else:
-                self.add_system_text("⚠️ Standart ses cihazı kullanılıyor")
-                self.add_system_text("💡 Sistem seslerini yakalamak için VB-Cable önerilir")
                 
         except Exception as e:
-            self.add_system_text(f"⚠️ Cihaz bilgisi alınamadı: {e}")
+            print(f"⚠️ Cihaz bilgisi alınamadı: {e}")
         
         self.is_system_recording = True
         self.is_processing = True
@@ -969,7 +1439,6 @@ class UnifiedVoiceApp:
         self.system_processing_thread.start()
         
         print("✅ Sistem ses tanıma başlatıldı")
-        self.add_system_text("🔊 Sistem ses izleme başladı - Ses gelirse işlenecek")
     
     def stop_system_recording(self):
         """Sistem ses kaydını durdurur - Streaming cleanup"""
@@ -983,14 +1452,14 @@ class UnifiedVoiceApp:
     def adjust_for_noise(self):
         """Basit eşik ayarı - Dengeli gerçekçi ayarlar"""
         try:
-            self.update_status("⚡ Eşik değeri dengeli ayarlara sabitlendi: 300")
+            self.update_status("⚡ Eşik değeri dengeli ayarlara sabitlendi: 200")
             # Gerçekçi eşik değeri
-            self.recognizer.energy_threshold = 300
-            self.update_status(f"✅ Mikrofon dengeli ayarlarla hazır (Eşik: 300)")
+            self.recognizer.energy_threshold = 200
+            self.update_status(f"✅ Mikrofon dengeli ayarlarla hazır (Eşik: 200)")
             
         except Exception as e:
-            self.update_status("✅ Varsayılan dengeli eşik: 300")
-            self.recognizer.energy_threshold = 300
+            self.update_status("✅ Varsayılan dengeli eşik: 200")
+            self.recognizer.energy_threshold = 200
     
     def user_audio_callback(self, recognizer, audio):
         """Kullanıcı ses callback - Ultra hızlı streaming"""
@@ -1106,7 +1575,6 @@ class UnifiedVoiceApp:
             )
             
             print(f"✅ Audio stream açıldı: {self.rate}Hz, {self.channels} kanal")
-            self.add_system_text("🔊 Sistem ses tanıma aktif!")
             
             while self.is_system_recording:
                 try:
@@ -1316,8 +1784,7 @@ class UnifiedVoiceApp:
                 sentence += "."
             
             self.user_word_buffer.clear()
-            self.add_user_text(sentence)
-            self.send_to_flask(sentence, "user")
+            self.add_user_text(sentence)  # Flask'a gönderim add_user_text içinde
     
     def complete_system_sentence(self, add_period=False):
         """Sistem cümle tamamlama - Simplified"""
@@ -1327,8 +1794,7 @@ class UnifiedVoiceApp:
                 sentence += "."
             
             self.system_word_buffer.clear()
-            self.add_system_text(sentence)
-            self.send_to_flask(sentence, "system")
+            self.add_system_text(sentence)  # Flask'a gönderim add_system_text içinde
     
     def check_user_sentence_timeout(self):
         """Kullanıcı buffer timeout - Streaming ile entegre"""
@@ -1498,6 +1964,36 @@ class UnifiedVoiceApp:
         except Exception as e:
             print(f"⚠️ BERT modeli yüklenemedi: {e}")
             self.bert_model = None
+    
+    def is_real_speech_text(self, text):
+        """Gerçek konuşma metinlerini sistem mesajlarından ayırır"""
+        if not text or len(text.strip()) < 3:
+            return False
+        
+        # Sistem mesajları ve teknik metinler
+        system_keywords = [
+            "listening", "recording", "başlıyor", "stopping", "timeout",
+            "error", "recognizing", "api", "connection", "debug",
+            "log", "warning", "exception", "failed", "trying",
+            "mikrofo", "kayıt", "dinleni", "başla", "durdur"
+        ]
+        
+        text_lower = text.lower()
+        
+        # Sistem anahtar kelimeleri kontrolü
+        for keyword in system_keywords:
+            if keyword in text_lower:
+                return False
+        
+        # Çok kısa metinler (muhtemelen gürültü)
+        if len(text.strip()) < 5:
+            return False
+        
+        # Sadece rakam veya özel karakter içeren metinler
+        if not any(c.isalpha() for c in text):
+            return False
+        
+        return True
 
 if __name__ == "__main__":
     app = UnifiedVoiceApp()
