@@ -717,13 +717,8 @@ class LessonFocusAnalyzer:
         
         if not recent_system_texts and not recent_user_texts:
             print(f"⚠️ Son {period_seconds} saniyede veri bulunamadı!")
-            # Sadece API focus_score varsa onu göster
-            if api_focus_score is not None:
-                print(f"\n📊 API'DEN GELEN GÜNCEL ODAK SKORU: {api_focus_score:.4f} ({api_focus_score*100:.1f}%)")
-                grade, category, emoji = self.get_focus_grade(api_focus_score)
-                print(f"{emoji} DEĞERLENDİRME: {grade} - {category}")
-                return {'api_focus_score': api_focus_score, 'focus_grade': grade, 'focus_category': category}
-            return None
+            print("� Hiç konuşma/metin yok, odak skoru ölçülemedi.")
+            return {'api_focus_score': None, 'focus_grade': 'ölçülemedi', 'focus_category': 'ölçülemedi'}
         
         print(f"\n📊 SON {period_seconds} SANİYE ANALİZİ:")
         print(f"🎓 Ders metinleri: {len(recent_system_texts)} adet")

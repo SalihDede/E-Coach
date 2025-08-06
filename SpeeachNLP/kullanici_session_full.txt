@@ -1,6 +1,211 @@
 === Kullanıcı Session Full Transkripti ===
-Session Başlangıç: 2025-08-06 15:00:08
+Session Başlangıç: 2025-08-06 21:56:21
 Dosya: kullanici_session_full.txt
 NOT: Bu dosya uygulama açık olduğu sürece tüm verileri tutar.
 ==================================================
 
+[2025-08-06 21:57:45] mikrofon izini istiyor ve arka planda Aslında görmediğimiz şu an ama gerçekleşecek olarak böyle bir yer var Bu benim kaynak sesimi aldı Bu da bilgisayarın kaynakçasını aldığı platformlar bunu şu an denerken aslında.
+[2025-08-06 21:57:47] Benim mikrofonum
+[2025-08-06 21:59:17] el Elem yapısı yaptık bunun sonucunda Aslında bu parametreleri kullanarak hem yakın hem de uzun vadeli tepkilerde bulunabiliyorsunuz bunları göstermem gerekirse gördüğümüz gibi burada öğrenci bazlı Giriş yaparak
+[2025-08-06 21:59:21] anlayarak zaman periyotları halinde gördüğünüz gibi zaman damgalı olarak Kayıt ediyor şu an sistemde bir ses olmadığı için karşılıklı ses bulamadığı için aslında bay tarafında scip karşılaştırılması ve Bağlam yakınlığı ya da farklılığı kapsamında bir skor elde edemediği için bunu Deere katıyor Şu an burada gördüğümüz skor sadece Nur yerini dolduran bir değer ve hiçbir anlamı yok aynı şekilde burada klavye mouse izlemede mouse ve klavye aktivasyonunu buradan göremiyoruz ama sadece anlık olarak hangi ekranlar üstünde işlem yapacağımızı burada seçerek mesela şu anda mevcut olan ekran işte Vision denklemi gibi ekranları seçip kaydettiğim takdirde geçirdiğim toplam zamanı zaman parametresi aktiflik olarak gösteriyor şu an vsk geçme maliyetinde benim saffle isminde güvenli alanında ve çalışma alanında olduğu için Orayı Açtığımda da artık burada listelemeye başlıyor ve geçirdiğim zaman anlık olarak güncelliyor aynı şekilde bunun devamında bu bütün parametreleri çalıştırmak için mantıksal olarak bir link yayınlanan Craft merkezli.
+[2025-08-06 21:59:23] eypio aslında küçük ve büyük ölçekli 2 model kullanılıyor küçüğün kullanım nedeni.
+[2025-08-06 22:00:03] kotalar ve token boyut sınırlamasına takılmamak için arka plandaki küçük parçacıkların birleştirilmesini ve filtrelemesi sağlayarak daha net bir şekilde soruyor üretebilmek Ama asıl Age kısmındaki gücü Cem'in Ay'dan alıyoruz 1.5 modelinden burada gördüğümüz şeyler tuğlaların definasyonda Agent tarafını görürsek de Agent kullanabileceği toolları görebiliyoruz burada Nasıl davranması gerektiği ve parametreleri anlatıyoruz sonrasında
+[2025-08-06 22:00:18] patladı abi daha da aşağı indiğimde Aslında flask yapısını oluşturup Editon değerlerini Biraz sonra frontal görmemizi sağlayacağız burada ana döngüyü de başlattığında edit başlamış oluyor Agent her 1 dakikalık senaryoda kullanıcıyı uyarıcı bazı durumlar öneriyor kotaya takıldık
+[2025-08-06 22:00:41] abi Sıkıntı yok burayı şey yaparım ya keserim videoyu dur Nasıl olacak o şimdi.
+[2025-08-06 22:00:47] abi.
+[2025-08-06 22:01:00] Koton muhabbetini neden bu kadar salakça Ya ben ilk hangisini kullandım acaba
+[2025-08-06 22:01:11] Abi şöyle bir şey deneyeceğim
+[2025-08-06 22:01:23] şöyle yapacağım seninkini açacağım şöyle şuraya geleceğim abi.
+[2025-08-06 22:01:31] Vestel diyeceğim abi.
+[2025-08-06 22:01:39] Renault.
+[2025-08-06 22:01:51] Kanka far etmiyor diye biliyorum ama.
+[2025-08-06 22:01:59] Bir dakika abi şunu bir deneyeyim bakayım ne olacak
+[2025-08-06 22:02:10] Hah geldi galiba.
+[2025-08-06 22:02:16] kaydı başlatıyorum Abi yok abi bu patlıyor.
+[2025-08-06 22:02:30] yok Sıkıntı yok abi kesmek.
+[2025-08-06 22:02:32] duraklat istersen.
+[2025-08-06 22:02:40] Ne yapalım Ne yapalım düşüneyim.
+[2025-08-06 22:02:52] değil mi abi bunun Bence de öyle acaba kayıt mı etmeli mi diyeceğim de.
+[2025-08-06 22:03:03] Neyi abi
+[2025-08-06 22:03:10] şunu bir daha deneyeyim abi sonra gelelim.
+[2025-08-06 22:03:13] Bu çalışıyor.
+[2025-08-06 22:03:17] bu çalışmıyor şu an bunu çalıştır abi.
+[2025-08-06 22:03:21] şu an çalışıyor bunu çalıştır abi
+[2025-08-06 22:03:27] oto patlıyor.
+[2025-08-06 22:03:33] interaktif
+[2025-08-06 22:03:41] restart Clear output.
+[2025-08-06 22:04:05] abi sanmıyorum çünkü Ronaldo dediğimde hepsi çalışıyor ama.
+[2025-08-06 22:04:09] şu an bu ekran sizde gözükmüyor mu.
+[2025-08-06 22:04:17] nasıl abi.
+[2025-08-06 22:04:22] alttakini at abi.
+[2025-08-06 22:04:25] o da olur.
+[2025-08-06 22:05:21] Oğlum çok garip bir hata veriyor lan he Express yapmışsın ilham ettim bunu
+[2025-08-06 22:05:29] aldım abi.
+[2025-08-06 22:05:40] restart
+[2025-08-06 22:05:43] yok abi.
+[2025-08-06 22:05:48] O yüzden kendinizi paylaşmayın.
+[2025-08-06 22:05:58] Harbiden öyle ya.
+[2025-08-06 22:06:03] Ben bir kere Google.
+[2025-08-06 22:06:06] Ben Google fpı paylaşmıştım.
+[2025-08-06 22:06:15] abi 10.000 TL'lik kota vardı $300
+[2025-08-06 22:06:21] Aferin veriyordu zaten parayı free veriyordu
+[2025-08-06 22:06:25] trailer öyleydi.
+[2025-08-06 22:06:40] Ben Var mısın içine koyuyorsun aga.
+[2025-08-06 22:06:51] oldu abi oldu abi açıyorum abi
+[2025-08-06 22:06:56] Aynen açıyorum şimdi kapattım şimdi
+[2025-08-06 22:07:03] cu cu cu cu
+[2025-08-06 22:07:05] restart please
+[2025-08-06 22:07:11] AB kanımı paylaşıyorum size.
+[2025-08-06 22:07:22] ekran paylaş 1 ekranımı paylaş sesi de paylaş paylaş paylaş paylaş
+[2025-08-06 22:07:31] bu anlattığım bütün teknolojileri anlık olarak.
+[2025-08-06 22:07:35] reachable yuvaya taşıdık ve demo halinde görebiliyoruz.
+[2025-08-06 22:07:39] burada acentamız adım adım çalıştırdığımız zaman
+[2025-08-06 22:07:47] burada Flash sunucusunu başlatıp yuvaya veri transferini sağlıyoruz
+[2025-08-06 22:07:54] Şaka mı yapıyorsun amına koyayım ya.
+[2025-08-06 22:07:59] Tamam Sıkıntı yok Sıkıntı yok açıyorum hallediyorum şimdi.
+[2025-08-06 22:08:02] şimdi Demin anlattığım her şeyi burada.
+[2025-08-06 22:08:22] Agent ile beraber endpoint yardımıyla Dispanseri ve requestly freemat taşıyarak interaktif bir şekilde kullanabiliyoruz şu anki Demoda her 1 dakikada aldığı verileri bize.
+[2025-08-06 22:08:43] Cemile ile beraber yorumlayıp bizi motive edici şekilde ve anlık durumumuzu analiz ederek eski verilere dayalı olarak bizi aydınlatıyor sonrasında burada aktif olarak acentamız sorup okulları bir mantık sırasına bağlı kullanmasını kendi karar mekanizmasına bırakarak değerlendiriyoruz Şu an bunu göstermek gerekirse.
+[2025-08-06 22:09:23] tanımları yaptıktan sonra yardımcı fonksiyonları tanımlıyorum burada Flash sistemini çalıştırıyorum Böylelikle endpoint açmış oluyoruz aktif bir şekilde çalışıyorlar ana döngüyü çalıştırdığım andan itibaren Aslında Eğer çalışmaya başlıyor Burada şu an ilk gösterdiği şeyler bizim bildirimlerimizi olmaya başlıyor ve buraya baktığımızda aslında şu an sol tarafta gelecek mavi 6 beyaz yazılar otomatik sistemin verdiği mesajlar Şu an biraz beklememiz lazım sistem yeni çalıştığı için.
+[2025-08-06 22:09:28] Mesela şu an benim dikkat seviyemi yetersiz olduğunu ve biraz süre geçmesi gerektiğini söylüyor ama bunun dışında ben bir soru sorduğumda sisteme Merhaba.
+[2025-08-06 22:09:33] verilerime bakarak bana bir.
+[2025-08-06 22:09:45] sistemi Öner gibi bana özel bir soru sorduğumda bunu anlık olarak bütün Chrome'a diye bir veritabanına bakarak.
+[2025-08-06 22:09:51] Abi şaka mı.
+[2025-08-06 22:10:11] abi Bir dakika şimdi Şurayı temizle pornosu göndereceğiz.
+[2025-08-06 22:10:18] Clio abi.
+[2025-08-06 22:10:22] Maceracı yapamıyor musun Dur lan.
+[2025-08-06 22:10:30] Allah'ın hakkı 3 Turabi şimdi olacak şimdi Büyük hissediyorum.
+[2025-08-06 22:10:44] kaydet.
+[2025-08-06 22:10:50] şu an ekran kaydediliyor değil mi sizde yazıyor kayıtlı oluyor.
+[2025-08-06 22:10:58] Tamam OK.
+[2025-08-06 22:11:10] şu an mevcut sistemi denediğimde bütün Blokları teker teker import ediyorum Agent için.
+[2025-08-06 22:11:14] import leri geçerli kılıyorum.
+[2025-08-06 22:11:19] burada konuşmana gerek yok ya Burayı hızlandırırım aslında yapsın abi.
+[2025-08-06 22:11:21] sonra bunu böyle yapıyoruz
+[2025-08-06 22:11:28] Kore konuşabilirsiniz abi ya burada ses kaldırırım herhalde çalışsınlar.
+[2025-08-06 22:11:36] Bu da tamam.
+[2025-08-06 22:11:42] Unutamam şuraya gelmiş olabilir refleksle abi.
+[2025-08-06 22:11:46] şuraya gel çalıştır.
+[2025-08-06 22:11:52] bunda çalıştır Flash çalışsın çalıştır.
+[2025-08-06 22:12:04] Merhaba Sence nasıl bir
+[2025-08-06 22:12:09] çalışma tekniği izlemeliyim.
+[2025-08-06 22:12:15] geçmiş verilerime bakarak
+[2025-08-06 22:12:17] cevap ver
+[2025-08-06 22:13:59] Abi bu niye böyle yapıyor ya çıldıracağım ya Baksana
+[2025-08-06 22:14:02] kota hatası veriyor yine.
+[2025-08-06 22:14:11] herkesin küfür ya.
+[2025-08-06 22:14:35] acaba bilin ki açıp deneyip kapatsam ne olur.
+[2025-08-06 22:14:49] hiçbir bilgim yok abi.
+[2025-08-06 22:15:07] çalış lan.
+[2025-08-06 22:15:25] Abi bu çok salakça diyeyim ya free trilyon Bu kadar çabuk bitmemesi lazım Bir de adam video kaydında diyor ki size free trailer veriyoruz oradan deneyin.
+[2025-08-06 22:15:28] Ceyda hekaton demosunu şeyinde anlatımında
+[2025-08-06 22:15:37] Abi şu an ses falan çubuğunda değil Bu arada Çalışkan salacağım buraya kadar sesli anlatım zaten.
+[2025-08-06 22:15:49] işim var.
+[2025-08-06 22:15:55] şu an veremem veremem.
+[2025-08-06 22:16:26] bu değil benimki.
+[2025-08-06 22:16:39] şimdi.
+[2025-08-06 22:16:53] abi Allah rızası için en ezik modeli kullanıyoruz zaten hani
+[2025-08-06 22:16:56] nasıl bir performans bekliyor ki bizden.
+[2025-08-06 22:17:03] iPhone telefon.
+[2025-08-06 22:17:11] Bir de utanmadan Ela'yı for developers yazmışlar Ulan ne yapabiliyoruz ki developers.
+[2025-08-06 22:17:22] nan nan n.
+[2025-08-06 22:17:30] nen nen nen nen nen nen.
+[2025-08-06 22:17:34] Google
+[2025-08-06 22:17:37] Cemile Api
+[2025-08-06 22:17:47] benimkisi bu mavi.
+[2025-08-06 22:18:03] burada Mesela yazıyordu da bakalım abi yok yok ki.
+[2025-08-06 22:18:07] bilinç.
+[2025-08-06 22:18:15] proje bu mu Yok getapk 2 var zaten go to being
+[2025-08-06 22:18:23] Open Cloud console
+[2025-08-06 22:18:37] vav vav vav vav vav vav vav vav vav vav vav vav vav vav vav vav vav vav.
+[2025-08-06 22:18:54] Abiş şöyle bir şey var Daha önce Google'dan free Trail almadıysanız alabiliyorsunuz.
+[2025-08-06 22:20:05] abi burada şey görebiliyor musunuz pp.
+[2025-08-06 22:20:28] Abi şimdi olacak galiba.
+[2025-08-06 22:20:57] abi bir şey diyeceğim belli Pilava geçtim yine aynısı oluyor Ben Delireceğim ha.
+[2025-08-06 22:21:53] Ne diyor lan bu
+[2025-08-06 22:24:06] işim var
+[2025-08-06 22:29:35] abi 200 lira attım karta şeye olacak galiba
+[2025-08-06 22:29:47] Show key dersem Run çekersem bunu da gelip abi şurada.
+[2025-08-06 22:29:53] interak.
+[2025-08-06 22:29:58] şuraya koyarsam Abi şimdi olacak abi herhalde.
+[2025-08-06 22:30:01] abi sana ekran paylaşıyorum.
+[2025-08-06 22:30:07] 1 ekran sesi de paylaş paylaş
+[2025-08-06 22:30:13] bunda Gönder abi tamam.
+[2025-08-06 22:30:18] kopyaladım şuraya geldim kapattım.
+[2025-08-06 22:30:26] koymayacağım ya zaten anlattım ya buraya kadar demo kısmında şey olur.
+[2025-08-06 22:30:36] abi taşak geçiyor herhalde Şaka maka.
+[2025-08-06 22:30:42] bir bakayım şu düzeldi mi.
+[2025-08-06 22:30:59] Seyit abi.
+[2025-08-06 22:31:05] key zaten
+[2025-08-06 22:31:08] ortak kanka şey değişmiyor.
+[2025-08-06 22:31:15] Ne yapıyorsun screen.
+[2025-08-06 22:31:18] güncelle abi
+[2025-08-06 22:31:33] bunun Keyne mesela buna bakabilir miyim böyle.
+[2025-08-06 22:31:46] General Mobile şey yapıyor Bunların hepsi farklı zaten Yani farklı şeyler.
+[2025-08-06 22:31:51] Ben şunun içine 200 Lira yatırdım.
+[2025-08-06 22:31:57] Bir dakika abi.
+[2025-08-06 22:32:00] Üstelik tutkal yapalım.
+[2025-08-06 22:32:07] Çınar toplanmış Eyüp köy diyelim Okey diyelim Sev diyelim olacak mı şimdi
+[2025-08-06 22:32:29] hıçkırık köy jeneratör ve yay Şimdi ben bunun detayına giriyorum.
+[2025-08-06 22:32:36] işte bana demin verdiği kopyaladım kapattım
+[2025-08-06 22:32:41] Amway motora koydum
+[2025-08-06 22:32:45] Hatta ve hatta.
+[2025-08-06 22:32:53] buradan kopyaladım
+[2025-08-06 22:32:57] bilindik abi şey de var.
+[2025-08-06 22:33:09] TDK tamam.
+[2025-08-06 22:33:12] Memiş budding aut
+[2025-08-06 22:33:36] çok karışık
+[2025-08-06 22:34:36] abi baksana.
+[2025-08-06 22:34:42] 284 51.
+[2025-08-06 22:34:52] kota bu mu acaba.
+[2025-08-06 22:34:58] %99 Aynen kota.
+[2025-08-06 22:35:04] bunu nasıl arttıracağız şimdi.
+[2025-08-06 22:35:09] hepsinin Bölük odası var.
+[2025-08-06 22:35:14] Unlimited ne bu Flash HD.
+[2025-08-06 22:35:29] abi İkisi de aynı bu
+[2025-08-06 22:35:45] More actions şurada edit kota diyor.
+[2025-08-06 22:35:49] Kaşmir ne kadar kullanmış kotası nerede bunun bu mu
+[2025-08-06 22:35:52] 51
+[2025-08-06 22:35:57] edit kota kotasına olsun 200.
+[2025-08-06 22:36:58] Abi ben bunu
+[2025-08-06 22:37:37] More actions Edith Code.
+[2025-08-06 22:37:50] Abi şaka mı yapıyor ya.
+[2025-08-06 22:39:06] bunda Limit var gözüküyor abi.
+[2025-08-06 22:39:42] abi baksana burada bütün limitler boş gözüküyor günlük kullanım sıfır bu hangisiyse
+[2025-08-06 22:39:47] gen Land yazan tamam mı şuraya geldim şimdi
+[2025-08-06 22:39:49] buradan MP3.
+[2025-08-06 22:39:55] Kredi epey 2 ay dedim burada.
+[2025-08-06 22:40:02] gen Lag yazan bu kredi.
+[2025-08-06 22:40:05] copy dedim abi kapattım
+[2025-08-06 22:40:09] bak teori 1 şimdi bu.
+[2025-08-06 22:40:12] farklı mı oldu deneyelim bakalım.
+[2025-08-06 22:40:17] Tamam onu aldım.
+[2025-08-06 22:40:21] üsttekini aldım.
+[2025-08-06 22:40:30] alttakini çalıştım Dur bir bakayım deneyeyim ne olacak.
+[2025-08-06 22:40:41] kayıtta mı yaşıyorsun.
+[2025-08-06 22:40:59] hiçbir bok anlamadım ya
+[2025-08-06 22:42:08] Abi çeke bir soralım
+[2025-08-06 22:42:32] sabıka salakça bir sistem olamaz ya.
+[2025-08-06 22:42:44] şeyin Deadline 23.59 muydu abi
+[2025-08-06 22:43:33] anne işim var vaktim yok veremem şu an.
+[2025-08-06 22:43:53] tabii böyle göndereyim o zaman ya.
+[2025-08-06 22:44:17] 23.59 yazmışlar buraya
+[2025-08-06 22:44:29] Kanka benim ekranım şu an paylaşılıyor mu
+[2025-08-06 22:44:35] bunları mı
+[2025-08-06 22:44:57] Sen şey diyorsun bir estetik Şurayı.
+[2025-08-06 22:45:07] Onlar benim eski başka kullandığım Eyüp yaylar ya
+[2025-08-06 22:45:14] çalışmalar bunun böyle olması da salakça ya.
+[2025-08-06 22:45:38] Abi başka bir cihazdan gireceğim Bir dursana geliyorum
+[2025-08-06 22:46:55] öldüm Terden Ya üf Abi evde kullan bu cihazdan başka cihaz var mı Uçan girdiğiniz cihazdan başka.
+[2025-08-06 22:47:17] abi oluştuğunda kabul etmiyor bir dene istersen ben şu an farklı bir cihazdan oluşturuyorum.
+[2025-08-06 22:47:20] ben bu kadar salakça bir şey görmedim ya.
+[2025-08-06 22:47:33] Mekke bakıyor durağı.
+[2025-08-06 22:47:49] Abi çok salaksın ne kadar Rukiye satıyor olabilirim ki
+[2025-08-06 22:48:14] Abi ben şu an bir tane watt şeyden attım tabletten attım onu deneyeceğim.
+[2025-08-06 22:48:17] perden var ya su gibiyim şu an.
+[2025-08-06 22:49:03] kayda Ç.
+[2025-08-06 22:49:14] İnce.
+[2025-08-06 22:53:03] abi kafidir ya bu.
+[2025-08-06 22:53:21] abi hiç yoktan iyidir.
+[2025-08-06 22:53:29] hemen Meet atsanıza biriniz.
+[2025-08-06 22:55:06] abi anlık altıma sıçtım

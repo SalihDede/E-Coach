@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useActiveTools } from './useActiveTools';
+import type { ActiveToolResult } from './useActiveTools';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Lottie from 'lottie-react';
 import robotFaceAnimation from './assets/ROBOT-THINK.json';
+import { speak } from './utils/tts';
 
 // Göz takibi verileri için arayüz (interface)
 interface AttentionData {
@@ -66,6 +69,19 @@ interface LastResponseData {
 
 function App() {
   // Göz takibi verilerini ve API durumunu tutmak için state'ler
+  // Aktif tool ve efekt durumu
+  const [activeTool, setActiveTool] = useState<ActiveToolResult | null>(null);
+  const [showRedEffect, setShowRedEffect] = useState(false);
+
+  // Aktif tool değiştiğinde efekt ve uyarı tetikle
+  useActiveTools((toolResult) => {
+    setActiveTool(toolResult);
+    if (toolResult?.tool === 'DikkatUyarisi') {
+      setShowRedEffect(true);
+      speak('Dikkat uyarısı aktif!');
+      setTimeout(() => setShowRedEffect(false), 2000);
+    }
+  });
   const [attentionData, setAttentionData] = useState<AttentionData | null>(null);
   const [isAttentionApiActive, setIsAttentionApiActive] = useState(false);
   const [attentionHistory, setAttentionHistory] = useState<number[]>([]);
@@ -655,9 +671,81 @@ function App() {
   }, [isVoiceApiActive]);
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={showRedEffect ? { animation: 'red-flash 0.2s alternate 10' } : {}}>
       <header className="app-header">
         <h1>Anlık Durum İzleme Sistemi</h1>
+        {/* Aktif tool uyarısı */}
+        {activeTool?.tool === 'DikkatUyarisi' && (
+          <div style={{
+            background: 'linear-gradient(90deg, #ff1744, #ff8c00)',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '1.2em',
+            padding: '10px 24px',
+            borderRadius: '12px',
+            margin: '12px auto',
+            boxShadow: '0 2px 12px rgba(255,0,0,0.2)',
+            textAlign: 'center',
+            maxWidth: '500px',
+            animation: 'red-flash 0.2s alternate 10'
+          }}>
+            ⚠️ Dikkatin dağılıyor, odaklanmaya çalış!
+          </div>
+        )}
+        {activeTool?.tool === 'MolaOnerisi' && (
+          <div style={{
+            background: 'linear-gradient(90deg, #ff9800, #ffe0b2)',
+            color: '#6d4c41',
+            fontWeight: 'bold',
+            fontSize: '1.15em',
+            padding: '10px 24px',
+            borderRadius: '12px',
+            margin: '12px auto',
+            boxShadow: '0 2px 12px rgba(255,140,0,0.15)',
+            textAlign: 'center',
+            maxWidth: '500px'
+          }}>
+            🧘 Biraz mola vermek sana iyi gelecek, sakinleş kafanı dağıt sonra kaldığımız yerden devam edelim.
+          </div>
+        )}
+        {activeTool?.tool === 'ZihinYorgunluguTahmini' && (
+          <div style={{
+            background: 'linear-gradient(90deg, #607d8b, #b0bec5)',
+            color: '#263238',
+            fontWeight: 'bold',
+            fontSize: '1.15em',
+            padding: '10px 24px',
+            borderRadius: '12px',
+            margin: '12px auto',
+            boxShadow: '0 2px 12px rgba(96,125,139,0.15)',
+            textAlign: 'center',
+            maxWidth: '500px'
+          }}>
+            🧠 Bugünlük sanki bu kadar yeter, kafanı buraya veremiyorsun.
+          </div>
+        )}
+        {activeTool?.tool === 'SoruyaGoreAnalizYap' && (
+          <div style={{
+            background: 'linear-gradient(90deg, #00bcd4, #b2ebf2)',
+            color: '#006064',
+            fontWeight: 'bold',
+            fontSize: '1.15em',
+            padding: '10px 24px',
+            borderRadius: '12px',
+            margin: '12px auto',
+            boxShadow: '0 2px 12px rgba(0,188,212,0.15)',
+            textAlign: 'center',
+            maxWidth: '500px'
+          }}>
+            🤖 Sorunu cevaplamaya çalışacağım (sesli yanıt veriliyor).
+          </div>
+        )}
+        <style>{`
+          @keyframes red-flash {
+            0% { background: #fff; }
+            100% { background: #ff1744; }
+          }
+        `}</style>
       </header>
       
       <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -749,7 +837,7 @@ function App() {
                                 ? (message.alertType === 'attention' ? 'rgba(255, 193, 7, 0.1)' : 'rgba(13, 202, 240, 0.1)')
                                 : 'rgba(240, 240, 240, 0.8)',
                               color: message.isAutoMessage 
-                                ? (message.alertType === 'attention' ? '#e65100' : '#0277bd')
+                                ? (message.alertType === 'attention' ? '#e65100' : '#fafafaff')
                                 : '#333',
                               padding: '12px 16px',
                               borderRadius: '18px 18px 18px 5px',
@@ -913,7 +1001,7 @@ function App() {
                     background: isLoading || !currentQuestion.trim() 
                       ? 'linear-gradient(45deg, #ccc, #ddd)' 
                       : 'linear-gradient(45deg, #6a11cb, #2575fc)', 
-                    color: '#fff', 
+                    color: 'white', 
                     border: 'none', 
                     borderRadius: '10px', 
                     cursor: isLoading || !currentQuestion.trim() ? 'not-allowed' : 'pointer', 
